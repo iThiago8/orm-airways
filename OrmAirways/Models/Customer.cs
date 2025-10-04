@@ -8,7 +8,7 @@ namespace OrmAirways.Models
         public int ID { get; set; }
         public string Name { get; set; } = string.Empty;
         public string CPF { get; set; } = string.Empty;
-        public string Telephone { get; set; } = string.Empty;
-        public bool VIP { get; set; }
+        public string PhoneNumber { get; set; } = string.Empty;
+        public bool IsVIP { get; set; }
     }
 }

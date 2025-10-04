@@ -7,6 +7,6 @@ namespace OrmAirways.Models
         [Key]
         public int ID { get; set; }
         public string Model { get; set; } = string.Empty;
-        public int Seats { get; set; }
+        public int SeatNumber { get; set; }
     }
 }
