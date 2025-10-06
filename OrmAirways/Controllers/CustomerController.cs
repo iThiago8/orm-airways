@@ -54,6 +54,40 @@ namespace OrmAirways.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Update(int id)
+        {
+            var customer = await customerRepository.GetById(id);
+            if (customer == null)
+                return NotFound();
+
+            return View(new UpdateCustomerViewModel
+            {
+                CPF = customer.CPF,
+                Name = customer.Name,
+                PhoneNumber = customer.PhoneNumber,
+                IsVIP = customer.IsVIP
+            });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Update(UpdateCustomerViewModel viewModel)
+        {
+            if (!ModelState.IsValid)
+                return View(viewModel);
+
+            await customerRepository.Update(new Customer
+            {
+                ID = viewModel.ID,
+                CPF = viewModel.CPF,
+                Name = viewModel.Name,
+                PhoneNumber = viewModel.PhoneNumber,
+                IsVIP = viewModel.IsVIP
+            });
+
+            return RedirectToAction("Index");
+        }
+
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
