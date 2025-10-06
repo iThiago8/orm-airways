@@ -1,5 +1,57 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+	ViewData["Title"] = "Clientes";
 }
+
+@model ICollection<OrmAirways.ViewModels.Customer.CustomerViewModel>
+
+
+<div class="text-center">
+    <h1 class="display-4">
+        Total de clientes: @Model.Count
+    </h1>
+
+    <a asp-controller="Customer" asp-action="Create">Novo</a>
+    <table class="table table-responsive table-hover table-striped">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>CPF</th>
+                <th>Nome</th>
+                <th>Nº de telefone</th>
+                <th>Vip?</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var c in Model)
+            {
+                <tr>
+                    <td>@c.ID</td>
+                    <td>@c.CPF</td>
+                    <td>@c.Name</td>
+                    <td>@c.PhoneNumber</td>
+                    <td>@c.IsVIP</td>
+                    <td>
+                        <a asp-controller="Customer" asp-action="Update"
+                           asp-route-id="@c.ID"
+                           class="btn btn-primary btn-sm">
+                            ✏️
+                        </a>
+                    </td>
+                    <td>
+                        <form asp-controller="Customer" asp-action="Delete"
+                              method="post">
+                            <input type="hidden" name="id" value="@c.ID" />
+                            <button type="submit"
+                                    class="btn btn-danger btn-sm">
+                                🗑️
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
