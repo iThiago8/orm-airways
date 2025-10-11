@@ -2,7 +2,6 @@
 using OrmAirways.Interfaces;
 using OrmAirways.ViewModels.Customer;
 using OrmAirways.Models;
-using System.Net.WebSockets;
 
 namespace OrmAirways.Controllers
 {
@@ -49,7 +48,8 @@ namespace OrmAirways.Controllers
             {
                 CPF = viewModel.CPF,
                 Name = viewModel.Name,
-                PhoneNumber = viewModel.PhoneNumber
+                PhoneNumber = viewModel.PhoneNumber,
+                IsVIP = viewModel.IsVIP
             });
             return RedirectToAction("Index");
         }
