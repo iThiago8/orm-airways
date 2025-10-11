@@ -2,8 +2,9 @@
 
 namespace OrmAirways.ViewModels.Customer
 {
-    public class CreateCustomerViewModel
+    public class UpdateCustomerViewModel
     {
+        public int ID { get; set; }
         [Required]
         public string Name { get; set; } = string.Empty;
         [Required]

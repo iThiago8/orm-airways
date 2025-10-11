@@ -1,16 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace OrmAirways.ViewModels.Customer
+﻿namespace OrmAirways.ViewModels.Customer
 {
-    public class CreateCustomerViewModel
+    public class CustomerViewModel
     {
-        [Required]
+        public int ID { get; set; }
         public string Name { get; set; } = string.Empty;
-        [Required]
         public string CPF { get; set; } = string.Empty;
-        [Required]
         public string PhoneNumber { get; set; } = string.Empty;
         public bool IsVIP { get; set; }
-
     }
 }
