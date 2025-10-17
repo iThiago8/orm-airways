@@ -15,6 +15,7 @@ builder.Services.AddDbContext<AirwaysDbContext>(options =>
 );
 
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<IAirportRepository, AirportRepository>();
 
 var app = builder.Build();
 
