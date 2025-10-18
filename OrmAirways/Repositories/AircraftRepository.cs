@@ -36,9 +36,9 @@ namespace OrmAirways.Repositories
 			return await _context.Aircrafts.FindAsync(id);
 		}
 
-		public async Task<Aircraft?> GetByModel(string model)
+		public async Task<List<Aircraft>?> GetByModel(string model)
 		{
-			return await _context.Aircrafts.FirstOrDefaultAsync(a => a.Model == model);
+			return await _context.Aircrafts.ToListAsync();
 		}
 
 		public Task Update(Aircraft aircraft)

@@ -7,6 +7,6 @@
 		public Task Delete (Aircraft aircraft);
 		public Task<Aircraft?> GetById (int id);
 		public Task<List<Aircraft>?> GetAll ();
-		public Task<Aircraft?> GetByModel (string model);
+		public Task<List<Aircraft>?> GetByModel (string model);
 	}
 }
