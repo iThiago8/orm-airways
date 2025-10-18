@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OrmAirways.Interfaces;
-using OrmAirways.ViewModels.Customer;
 using OrmAirways.Models;
 
 namespace OrmAirways.Controllers
@@ -15,21 +14,7 @@ namespace OrmAirways.Controllers
             if (customers == null)
                 return View();
 
-            ICollection<CustomerViewModel> viewModels = [];
-
-            foreach (var c in customers)
-            {
-                viewModels.Add(new CustomerViewModel
-                {
-                    ID = c.ID,
-                    CPF = c.CPF,
-                    Name = c.Name,
-                    PhoneNumber = c.PhoneNumber,
-                    IsVIP = c.IsVIP
-                });
-            }
-
-            return View(viewModels);
+            return View(customers);
         }
 
         [HttpGet]
@@ -39,18 +24,12 @@ namespace OrmAirways.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateCustomerViewModel viewModel)
+        public async Task<IActionResult> Create(Customer customer)
         {
             if (!ModelState.IsValid)
-                return View(viewModel);
+                return View(customer);
 
-            await customerRepository.Create(new Customer
-            {
-                CPF = viewModel.CPF,
-                Name = viewModel.Name,
-                PhoneNumber = viewModel.PhoneNumber,
-                IsVIP = viewModel.IsVIP
-            });
+            await customerRepository.Create(customer);
             return RedirectToAction("Index");
         }
 
@@ -61,29 +40,16 @@ namespace OrmAirways.Controllers
             if (customer == null)
                 return NotFound();
 
-            return View(new UpdateCustomerViewModel
-            {
-                CPF = customer.CPF,
-                Name = customer.Name,
-                PhoneNumber = customer.PhoneNumber,
-                IsVIP = customer.IsVIP
-            });
+            return View(customer);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Update(UpdateCustomerViewModel viewModel)
+        public async Task<IActionResult> Update(Customer customer)
         {
             if (!ModelState.IsValid)
-                return View(viewModel);
+                return View(customer);
 
-            await customerRepository.Update(new Customer
-            {
-                ID = viewModel.ID,
-                CPF = viewModel.CPF,
-                Name = viewModel.Name,
-                PhoneNumber = viewModel.PhoneNumber,
-                IsVIP = viewModel.IsVIP
-            });
+            await customerRepository.Update(customer);
 
             return RedirectToAction("Index");
         }
