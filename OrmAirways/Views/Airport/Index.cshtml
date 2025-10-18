@@ -1,0 +1,68 @@
+﻿@model ICollection<OrmAirways.Models.Airport>
+
+
+
+<div class="container mt-4">
+
+    <div class="content-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1 class="page-title">@Model.Count Plantas Monitoradas</h1>
+            <div>
+                <a class="btn btn-primary-custom shadow-sm" asp-action="Create">
+                    <i class="fas fa-plus btn-icon">Cadastrar Novo Aeroporto</i> 
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead class="text-uppercase">
+                            <tr>
+                                <th>Nome do Aeroporto</th>
+                                <th>Cidade</th>
+                                <th>Estado</th>
+                                <th>País</th>
+                                <th class="text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var a in Model)
+                            {
+                                <tr>
+                                    <td><strong>@a.Name</strong></td>
+                                    <td>@a.City</td>
+                                    <td>@a.State</td>
+                                    <td>@a.Country</td>
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center gap-2">
+
+                                            <form asp-controller="Home" asp-action="Delete" method="post" onsubmit="return confirm('Tem certeza?');">
+                                                <input type="hidden" name="id" value="@a.ID" />
+                                                <button type="submit" class="btn btn-danger btn-sm btn-equal-width">Excluir</button>
+                                            </form>
+
+                                            <a class="btn btn-sm btn-outline-success btn-equal-width" asp-action="Update" asp-route-id="@a.ID">Edit</a>
+
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center p-5">
+                    <h4>Nenhum aeroporto cadastrado.</h4>
+                    <p>Clique em "Cadastrar Novo Aeroporto" para começar.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
