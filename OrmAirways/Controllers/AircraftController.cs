@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OrmAirways.Interfaces;
 using OrmAirways.Models;
+using System.Diagnostics;
 
 namespace OrmAirways.Controllers
 {
@@ -17,6 +18,12 @@ namespace OrmAirways.Controllers
 		public async Task<IActionResult> Index()
 		{
 			return View(await _aircraftRepository.GetAll());
+		}
+
+		[HttpGet]
+		public IActionResult Create()
+		{
+			return View();
 		}
 
 		[HttpPost]
@@ -59,6 +66,24 @@ namespace OrmAirways.Controllers
 				return BadRequest();
 			}
 			return View(aircraft);
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> Delete(int id)
+		{
+			var aircraft = await _aircraftRepository.GetById(id);
+			if(aircraft == null)
+			{
+				return NotFound();
+			}
+			await _aircraftRepository.Delete(aircraft);
+			return RedirectToAction("Index");
+		}
+
+		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+		public IActionResult Error()
+		{
+			return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
 		}
 	}
 }
