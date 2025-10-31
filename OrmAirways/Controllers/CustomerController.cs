@@ -1,103 +1,69 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OrmAirways.Interfaces;
-using OrmAirways.ViewModels.Customer;
 using OrmAirways.Models;
 
 namespace OrmAirways.Controllers
 {
-    public class CustomerController(ICustomerRepository customerRepository) : Controller
-    {
-        [HttpGet]
-        public async Task<IActionResult> Index()
-        {
-            var customers = await customerRepository.GetAll();
+	public class CustomerController(ICustomerRepository customerRepository) : Controller
+	{
+		[HttpGet]
+		public async Task<IActionResult> Index()
+		{
+			var customers = await customerRepository.GetAll();
 
-            if (customers == null)
-                return View();
+			if (customers == null)
+				return View();
 
-            ICollection<CustomerViewModel> viewModels = [];
+			return View(customers);
+		}
 
-            foreach (var c in customers)
-            {
-                viewModels.Add(new CustomerViewModel
-                {
-                    ID = c.ID,
-                    CPF = c.CPF,
-                    Name = c.Name,
-                    PhoneNumber = c.PhoneNumber,
-                    IsVIP = c.IsVIP
-                });
-            }
+		[HttpGet]
+		public IActionResult Create()
+		{
+			return View();
+		}
 
-            return View(viewModels);
-        }
+		[HttpPost]
+		public async Task<IActionResult> Create(Customer customer)
+		{
+			if (!ModelState.IsValid)
+				return View(customer);
 
-        [HttpGet]
-        public IActionResult Create()
-        {
-            return View();
-        }
+			await customerRepository.Create(customer);
+			return RedirectToAction("Index");
+		}
 
-        [HttpPost]
-        public async Task<IActionResult> Create(CreateCustomerViewModel viewModel)
-        {
-            if (!ModelState.IsValid)
-                return View(viewModel);
+		[HttpGet]
+		public async Task<IActionResult> Update(int id)
+		{
+			var customer = await customerRepository.GetById(id);
+			if (customer == null)
+				return NotFound();
 
-            await customerRepository.Create(new Customer
-            {
-                CPF = viewModel.CPF,
-                Name = viewModel.Name,
-                PhoneNumber = viewModel.PhoneNumber,
-                IsVIP = viewModel.IsVIP
-            });
-            return RedirectToAction("Index");
-        }
+			return View(customer);
+		}
 
-        [HttpGet]
-        public async Task<IActionResult> Update(int id)
-        {
-            var customer = await customerRepository.GetById(id);
-            if (customer == null)
-                return NotFound();
+		[HttpPost]
+		public async Task<IActionResult> Update(Customer customer)
+		{
+			if (!ModelState.IsValid)
+				return View(customer);
 
-            return View(new UpdateCustomerViewModel
-            {
-                CPF = customer.CPF,
-                Name = customer.Name,
-                PhoneNumber = customer.PhoneNumber,
-                IsVIP = customer.IsVIP
-            });
-        }
+			await customerRepository.Update(customer);
 
-        [HttpPost]
-        public async Task<IActionResult> Update(UpdateCustomerViewModel viewModel)
-        {
-            if (!ModelState.IsValid)
-                return View(viewModel);
+			return RedirectToAction("Index");
+		}
 
-            await customerRepository.Update(new Customer
-            {
-                ID = viewModel.ID,
-                CPF = viewModel.CPF,
-                Name = viewModel.Name,
-                PhoneNumber = viewModel.PhoneNumber,
-                IsVIP = viewModel.IsVIP
-            });
+		[HttpPost]
+		public async Task<IActionResult> Delete(int id)
+		{
+			var customer = await customerRepository.GetById(id);
+			if (customer == null)
+				return NotFound();
 
-            return RedirectToAction("Index");
-        }
+			await customerRepository.Delete(customer);
+			return RedirectToAction("Index");
 
-        [HttpPost]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var customer = await customerRepository.GetById(id);
-            if (customer == null)
-                return NotFound();
-
-            await customerRepository.Delete(customer);
-            return RedirectToAction("Index");
-
-        }
-    }
+		}
+	}
 }

@@ -1,0 +1,35 @@
+﻿@model ICollection<OrmAirways.Models.Aircraft>
+
+    @{
+        ViewData["Title"] = "New Aircraft";
+    }
+
+
+<div class="text-center"
+    <h1 class="display-4">
+        Total de Aeronaves: @Model.Count
+    </h1>
+
+    <a asp-controller="Aircraft" asp-action="Create">Novo</a>
+    <table class="table table-responsive table-hover table-striped">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Model</th>
+                <th>NumberSeats</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var a in Model)
+            {
+                <tr>
+                    <td>@a.ID</td>
+                    <td>@a.Model</td>
+                    <td>
+
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
