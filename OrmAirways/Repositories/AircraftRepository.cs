@@ -41,9 +41,10 @@ namespace OrmAirways.Repositories
 			return await _context.Aircrafts.ToListAsync();
 		}
 
-		public Task Update(Aircraft aircraft)
+		public async Task Update(Aircraft aircraft)
 		{
-			throw new NotImplementedException();
+			_context.Aircrafts.Update(aircraft);
+			await _context.SaveChangesAsync();
 		}
 	}
 }

@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using OrmAirways.Data;
 using OrmAirways.Interfaces;
 using OrmAirways.Models;
 
@@ -6,28 +8,36 @@ namespace OrmAirways.Repositories
 {
 	public class SeatRepository : ISeatRepository
 	{
-		public Task Create(Seat seat)
+		private readonly AirwaysDbContext _context;
+		public SeatRepository(AirwaysDbContext context)
 		{
-			throw new NotImplementedException();
+			_context = context;
+		}
+		public async Task Create(Seat seat)
+		{
+			await _context.Seats.AddAsync(seat);
+			await _context.SaveChangesAsync();
 		}
 
-		public Task Delete(Seat seat)
+		public async Task Delete(Seat seat)
 		{
-			throw new NotImplementedException();
+			_context.Seats.Remove(seat);
+			await _context.SaveChangesAsync();
 		}
 
-		public Task<List<Seat>?> GetAll()
+		public async Task<List<Seat>?> GetAll()
 		{
-			throw new NotImplementedException();
+			return await _context.Seats.ToListAsync();
 		}
 
-		public Task<Seat?> GetById(int id)
+		public async Task<Seat?> GetById(int id)
 		{
-			throw new NotImplementedException();
+			return await _context.Seats.FindAsync(id);
 		}
-		public Task Update(Seat seat)
+		public async Task Update(Seat seat)
 		{
-			throw new NotImplementedException();
+			_context.Seats.Update(seat);
+			await _context.SaveChangesAsync();
 		}
 	}
 }

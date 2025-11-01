@@ -10,6 +10,7 @@ namespace OrmAirways.Models
         public int AircraftID { get; set; }
         [ForeignKey(nameof(AircraftID))]
         public Aircraft Aircraft { get; set; } = new();
+        public string Name { get; set; } = string.Empty;
         public string Location { get; set; } = string.Empty;
 
     }

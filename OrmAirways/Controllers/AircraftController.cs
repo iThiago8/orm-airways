@@ -8,10 +8,12 @@ namespace OrmAirways.Controllers
 	public class AircraftController : Controller
 	{
 		private readonly IAircraftRepository _aircraftRepository;
+		private readonly ISeatRepository _seatRepository;
 
-		public AircraftController(IAircraftRepository aircraftRepository)
+		public AircraftController(IAircraftRepository aircraftRepository, ISeatRepository seatRepository)
 		{
 			_aircraftRepository = aircraftRepository; //Constructor Injection; Construtor feito
+			_seatRepository = seatRepository;
 		}
 
 		[HttpGet]
@@ -32,6 +34,23 @@ namespace OrmAirways.Controllers
 			if (ModelState.IsValid)
 			{
 				await _aircraftRepository.Create(aircraft);
+				string[] layout = { "Janela", "Corredor", "Corredor", "Janela" };
+
+				for (int i = 0; i < aircraft.SeatNumber; i++)
+				{
+					int location = i % layout.Length;
+
+					Seat seat = new Seat()
+					{
+						Aircraft = aircraft,
+						AircraftID = aircraft.ID,
+						Location = layout[location]
+					};
+
+					await _seatRepository.Create(seat);
+
+				}
+
 				return RedirectToAction("Index");
 			}
 

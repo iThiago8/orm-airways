@@ -8,5 +8,6 @@ namespace OrmAirways.Models
         public int ID { get; set; }
         public string Model { get; set; } = string.Empty;
         public int SeatNumber { get; set; }
+        public ICollection<Seat> Seats { get; set; } = [];
     }
 }
