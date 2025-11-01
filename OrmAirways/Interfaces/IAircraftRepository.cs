@@ -1,4 +1,6 @@
-﻿namespace OrmAirways.Models
+﻿using OrmAirways.Models;
+
+namespace OrmAirways.Interfaces
 {
 	public interface IAircraftRepository
 	{
