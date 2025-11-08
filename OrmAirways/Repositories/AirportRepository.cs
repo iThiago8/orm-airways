@@ -30,9 +30,10 @@ namespace OrmAirways.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public Task GetById(int id)
+        public async Task<Airport?> GetById(int id)
         {
-            var airport = _context.Airports.Where(a => a.ID == id).FirstOrDefaultAsync();
+            var airport = await _context.Airports.Where(a => a.ID == id).FirstOrDefaultAsync();
+
             return airport;
         }
         public async Task<List<Airport>> GetAll()

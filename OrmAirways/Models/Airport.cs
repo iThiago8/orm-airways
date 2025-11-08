@@ -10,7 +10,7 @@ namespace OrmAirways.Models
       public string Street { get; set; } = string.Empty;
       public string City { get; set; } = string.Empty;
       public string District { get; set; } = string.Empty;
-      public char State { get; set; }
+      public string State { get; set; } = string.Empty;
       public string Country { get; set; } = string.Empty;
       public string PostalCode { get; set; } = string.Empty;
     }

@@ -6,7 +6,7 @@
 
     <div class="content-header">
         <div class="d-flex justify-content-between align-items-center">
-            <h1 class="page-title">@Model.Count Plantas Monitoradas</h1>
+            <h1 class="page-title">@Model.Count Aeroporto(s) Monitorado(s)</h1>
             <div>
                 <a class="btn btn-primary-custom shadow-sm" asp-action="Create">
                     <i class="fas fa-plus btn-icon">Cadastrar Novo Aeroporto</i> 
@@ -41,7 +41,7 @@
                                     <td class="text-center">
                                         <div class="d-flex justify-content-center gap-2">
 
-                                            <form asp-controller="Home" asp-action="Delete" method="post" onsubmit="return confirm('Tem certeza?');">
+                                            <form asp-controller="Airport" asp-action="Delete" method="post" onsubmit="return confirm('Tem certeza?');">
                                                 <input type="hidden" name="id" value="@a.ID" />
                                                 <button type="submit" class="btn btn-danger btn-sm btn-equal-width">Excluir</button>
                                             </form>

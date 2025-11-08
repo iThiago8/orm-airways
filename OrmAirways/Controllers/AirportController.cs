@@ -39,5 +39,52 @@ namespace OrmAirways.Controllers
 
             return View(airport);
         }
+
+        [HttpPost]
+        public async  Task<IActionResult> Delete(Airport airport)
+        {
+            if (ModelState.IsValid)
+            {
+                await _context.Delete(airport);
+                return RedirectToAction("Index");
+            }
+
+            return View(airport);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Update(int? id)
+        {
+            if (!id.HasValue)
+            {
+                return BadRequest();
+            }
+
+            var airport = await _context.GetById(id!.Value);
+
+            if (airport == null)
+            {
+                return NotFound();
+            }
+
+            return View(airport);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Update(Airport airport)
+        {
+            if (airport == null)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                await _context.Update(airport);
+                return RedirectToAction("Index");
+            }
+
+            return View(airport);
+        }
     }
 }
