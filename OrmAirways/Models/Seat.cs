@@ -12,6 +12,5 @@ namespace OrmAirways.Models
         public Aircraft Aircraft { get; set; } = new();
         public string Name { get; set; } = string.Empty;
         public string Location { get; set; } = string.Empty;
-
     }
 }

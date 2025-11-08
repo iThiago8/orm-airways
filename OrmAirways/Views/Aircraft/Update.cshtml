@@ -1,5 +1,50 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model OrmAirways.Models.Aircraft
+
 @{
+    ViewData["Title"] = "Update";
 }
+<h1>Update</h1>
+
+<h4>Aircraft</h4>
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Update" asp-route-id="@Model.ID">
+            <input type="hidden" asp-for="ID" />
+            <div asp-validation-summary="ModelOnly"
+                 class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="Model"
+                       class="control-label"></label>
+                <input asp-for="Model"
+                       class="form-control" />
+                <span asp-validation-for="Model"
+                      class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SeatNumber"
+                       class="control-label"></label>
+                <input asp-for="SeatNumber"
+                       class="form-control" />
+                <span asp-validation-for="SeatNumber"
+                      class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Seats</label>
+                <ul class="list-group">
+                    @foreach (var seat in Model.Seats ?? new List<OrmAirways.Models.Seat>())
+                    {
+                        <li class="list-group-item">@seat.Name (@seat.Location)</li>
+                    }
+                </ul>
+            </div>
+
+            <div class="form-group text-end">
+                <input type="submit" value="Salvar"
+                       class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>

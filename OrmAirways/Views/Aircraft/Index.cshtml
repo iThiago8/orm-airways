@@ -5,7 +5,7 @@
     }
 
 
-<div class="text-center"
+<div class="text-center">
     <h1 class="display-4">
         Total de Aeronaves: @Model.Count
     </h1>
@@ -17,6 +17,7 @@
                 <th>Id</th>
                 <th>Model</th>
                 <th>NumberSeats</th>
+                <th></th>
             </tr>
         </thead>
 
@@ -26,10 +27,25 @@
                 <tr>
                     <td>@a.ID</td>
                     <td>@a.Model</td>
+                    <td>@a.SeatNumber</td>
                     <td>
-
+                            <a asp-controller="Aircraft" asp-action="Update"
+                               asp-route-id="@a.ID">
+                                ✏️
+                            </a>
+                        </td>
+                        <td>
+                            <form asp-controller="Aircraft" asp-action="Delete"
+                                  method="post">
+                                <input type="hidden" name="id" value="@a.ID" />
+                                <button type="submit"
+                                        class="btn btn-danger btn-sm">
+                                    🗑️
+                                </button>
+                            </form>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
+</div>
