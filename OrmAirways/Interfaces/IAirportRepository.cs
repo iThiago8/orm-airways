@@ -1,6 +1,6 @@
 ﻿using OrmAirways.Models;
 
-namespace OrmAirways.Repositories
+namespace OrmAirways.Interfaces
 {
     public interface IAirportRepository
     {

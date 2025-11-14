@@ -1,6 +1,7 @@
 ﻿using OrmAirways.Models;
 using OrmAirways.Data;
 using Microsoft.EntityFrameworkCore;
+using OrmAirways.Interfaces;
 
 namespace OrmAirways.Repositories
 {
