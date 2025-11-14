@@ -13,7 +13,6 @@ namespace OrmAirways.Repositories
 		{
 			_context = context;
 		}
-
 		public async Task Create(Aircraft aircraft)
 		{
 			await _context.Aircrafts.AddAsync(aircraft);
