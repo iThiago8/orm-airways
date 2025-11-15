@@ -1,7 +1,7 @@
 ﻿using OrmAirways.Models;
 using OrmAirways.Data;
-using OrmAirways.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using OrmAirways.Interfaces;
 
 namespace OrmAirways.Controllers
 {
