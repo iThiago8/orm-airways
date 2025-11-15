@@ -1,1 +1,56 @@
 ﻿@model ICollection<OrmAirways.Models.Booking>
+
+@{
+	ViewData["Title"] = "Reservas";
+}
+
+<div class="text-center">
+    <h1 class="display-4">
+        Total de clientes: @Model.Count
+    </h1>
+
+    <a asp-controller="Booking" asp-action="Create">Novo</a>
+    <table class="table table-responsive table-hover table-striped">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Cliente</th>
+                <th>Assento escolhido</th>
+                <th>Origem</th>
+                <th>Destino</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var b in Model)
+            {
+                <tr>
+                    <td>@b.ID</td>
+                    <td>@b.Customer.Name</td>
+                    <td>@b.Seat.Name</td>
+                    <td>@b.Flight.OriginAirport.Name</td>
+                    <td>@b.Flight.DestinationAirport.Name</td>
+                    <td>
+                        <a asp-controller="Booking" asp-action="Update"
+                           asp-route-id="@b.ID"
+                           class="btn btn-primary btn-sm">
+                            ✏️
+                        </a>
+                    </td>
+                    <td>
+                        <form asp-controller="Booking" asp-action="Delete"
+                              method="post">
+                            <input type="hidden" name="id" value="@b.ID" />
+                            <button type="submit"
+                                    class="btn btn-danger btn-sm">
+                                🗑️
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
