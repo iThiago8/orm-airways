@@ -2,12 +2,12 @@
 
 namespace OrmAirways.Models
 {
-    public class Aircraft
+    public class Aircraft : BaseEntity
     {
-        [Key]
-        public int ID { get; set; }
         public string Model { get; set; } = string.Empty;
-        public int SeatNumber { get; set; }
-        public ICollection<Seat> Seats { get; set; } = [];
+        public string RegistrationNumber { get; set; } = string.Empty;
+        public int Capacity { get; set; }
+
+        public ICollection<Seat> Seats { get; set; } = new List<Seat>();
     }
 }

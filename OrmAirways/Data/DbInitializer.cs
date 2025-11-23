@@ -7,8 +7,6 @@ namespace OrmAirways.Data
         public static void Initialize(AirwaysDbContext context)
         {
             context.Database.Migrate();
-
-            
         }
     }
 }

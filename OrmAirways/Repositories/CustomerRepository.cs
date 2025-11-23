@@ -9,9 +9,10 @@ namespace OrmAirways.Repositories
     {
         public async Task Create(Customer customer)
         {
-            await context.AddAsync(customer);
+            await context.Customers.AddAsync(customer);
             await context.SaveChangesAsync();
         }
+
         public async Task Update(Customer customer)
         {
             context.Customers.Update(customer);
@@ -20,19 +21,20 @@ namespace OrmAirways.Repositories
 
         public async Task Delete(Customer customer)
         {
-            context.Remove(customer);
+            context.Customers.Remove(customer);
             await context.SaveChangesAsync();
         }
 
         public async Task<List<Customer>?> GetAll()
         {
-            return await context.Customers.ToListAsync();
+            return await context.Customers
+                .AsNoTracking()
+                .ToListAsync();
         }
 
-        public async Task<Customer?> GetById(int id)
+        public async Task<Customer?> GetById(Guid id)
         {
             return await context.Customers.FindAsync(id);
         }
-
     }
 }

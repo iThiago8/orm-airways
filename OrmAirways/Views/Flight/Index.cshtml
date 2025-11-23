@@ -1,5 +1,121 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model IEnumerable<OrmAirways.Models.Flight>
+
 @{
+    ViewData["Title"] = "Voos Programados";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-secondary">
+        <i class="fas fa-calendar-alt me-2"></i>Voos Programados
+    </h2>
+    <a asp-action="Create" class="btn btn-dark">
+        <i class="fas fa-plus me-1"></i> Novo Voo
+    </a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Nº Voo</th>
+                        <th>Rota</th>
+                        <th>Partida / Chegada</th>
+                        <th>Aeronave</th>
+                        <th>Preço Base</th>
+                        <th class="text-end pe-4">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="ps-4 fw-bold text-primary">@item.FlightNumber</td>
+                            <td>
+                                <div class="d-flex align-items-center fw-bold">
+                                    <span>@item.Origin?.IataCode</span>
+                                    <i class="fas fa-arrow-right mx-2 text-muted small"></i>
+                                    <span>@item.Destination?.IataCode</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="small">Isso: <strong class="text-dark">@item.DepartureTime.ToString("dd/MM HH:mm")</strong></div>
+                                <div class="small text-muted">Chega: @item.ArrivalTime.ToString("dd/MM HH:mm")</div>
+                            </td>
+                            <td>
+                                <small class="text-dark d-block">@item.Aircraft?.Model</small>
+                                <small class="text-muted">(@item.Aircraft?.RegistrationNumber)</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border">R$ @item.BasePrice.ToString("N2")</span>
+                            </td>
+                            <td class="text-end pe-4">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info me-1" title="Detalhes">
+                                    <i class="fas fa-info-circle"></i>
+                                </a>
+                                <a asp-action="Update" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary me-1" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="@item.Id" data-number="@item.FlightNumber">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Confirmar Cancelamento</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Deseja cancelar e remover o voo <strong id="flightNumber"></strong>?</p>
+                <p class="text-danger small fw-bold mb-0"><i class="fas fa-exclamation-triangle me-1"></i> Atenção: Esta ação só será permitida se não houver passagens vendidas.</p>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Voltar</button>
+                <form id="deleteForm" method="post" asp-action="Delete">
+                    <input type="hidden" name="id" id="deleteId" />
+                    <button type="submit" class="btn btn-danger">Cancelar Voo</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var deleteModal = document.getElementById('deleteModal');
+        deleteModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var id = button.getAttribute('data-id');
+            var number = button.getAttribute('data-number');
+            deleteModal.querySelector('#deleteId').value = id;
+            deleteModal.querySelector('#flightNumber').textContent = number;
+        });
+    </script>
 }

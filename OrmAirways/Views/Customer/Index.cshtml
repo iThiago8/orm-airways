@@ -1,57 +1,124 @@
-﻿@{
-	ViewData["Title"] = "Clientes";
+﻿@model IEnumerable<OrmAirways.Models.Customer>
+
+@{
+    ViewData["Title"] = "Clientes";
 }
 
-@model ICollection<OrmAirways.Models.Customer>
-
-
-<div class="text-center">
-    <h1 class="display-4">
-        Total de clientes: @Model.Count
-    </h1>
-
-    <a asp-controller="Customer" asp-action="Create">Novo</a>
-    <table class="table table-responsive table-hover table-striped">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>CPF</th>
-                <th>Nome</th>
-                <th>Nº de telefone</th>
-                <th>Vip?</th>
-                <th></th>
-                <th></th>
-            </tr>
-        </thead>
-
-        <tbody>
-            @foreach (var c in Model)
-            {
-                <tr>
-                    <td>@c.ID</td>
-                    <td>@c.CPF</td>
-                    <td>@c.Name</td>
-                    <td>@c.PhoneNumber</td>
-                    <td>@c.IsVIP</td>
-                    <td>
-                        <a asp-controller="Customer" asp-action="Update"
-                           asp-route-id="@c.ID"
-                           class="btn btn-primary btn-sm">
-                            ✏️
-                        </a>
-                    </td>
-                    <td>
-                        <form asp-controller="Customer" asp-action="Delete"
-                              method="post">
-                            <input type="hidden" name="id" value="@c.ID" />
-                            <button type="submit"
-                                    class="btn btn-danger btn-sm">
-                                🗑️
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-secondary">
+        <i class="fas fa-users me-2"></i>Clientes
+    </h2>
+    <a asp-action="Create" class="btn btn-dark">
+        <i class="fas fa-user-plus me-1"></i> Novo Cliente
+    </a>
 </div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Nome Completo</th>
+                        <th>Documento (CPF)</th>
+                        <th>Contato</th>
+                        <th class="text-center">Categoria</th>
+                        <th class="text-end pe-4">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="ps-4 fw-bold text-dark">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px;">
+                                        <i class="fas fa-user text-secondary"></i>
+                                    </div>
+                                    @item.FullName
+                                </div>
+                            </td>
+                            <td>@item.DocumentNumber</td>
+                            <td>
+                                <div class="small text-muted"><i class="fas fa-envelope me-1"></i> @item.Email</div>
+                                <div class="small text-muted"><i class="fas fa-phone me-1"></i> @item.Phone</div>
+                            </td>
+                            <td class="text-center">
+                                @if (item.IsPriority)
+                                {
+                                    <span class="badge bg-warning text-dark border border-warning"><i class="fas fa-crown me-1"></i>VIP</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-light text-secondary border">Padrão</span>
+                                }
+                            </td>
+                            <td class="text-end pe-4">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info me-1">
+                                    <i class="fas fa-info-circle"></i>
+                                </a>
+                                <a asp-action="Update" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary me-1">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="@item.Id" data-name="@item.FullName">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Confirmar Exclusão</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Deseja remover o cliente <strong id="customerName"></strong>?</p>
+                <p class="text-muted small mb-0">O histórico de reservas antigas permanecerá no banco se configurado, mas o cadastro será inativado.</p>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                <form id="deleteForm" method="post" asp-action="Delete">
+                    <input type="hidden" name="id" id="deleteId" />
+                    <button type="submit" class="btn btn-danger">Excluir</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var deleteModal = document.getElementById('deleteModal');
+        deleteModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var id = button.getAttribute('data-id');
+            var name = button.getAttribute('data-name');
+            deleteModal.querySelector('#deleteId').value = id;
+            deleteModal.querySelector('#customerName').textContent = name;
+        });
+    </script>
+}

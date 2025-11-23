@@ -1,0 +1,38 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+<ul class="nav flex-column w-100">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <li class="nav-item mb-3 px-2">
+            <div class="p-2 rounded bg-dark border border-secondary text-center">
+                <i class="fas fa-user-circle fa-2x text-warning mb-1"></i>
+                <div class="text-truncate text-white small" title="@UserManager.GetUserName(User)">
+                    @UserManager.GetUserName(User)
+                </div>
+            </div>
+        </li>
+
+        <li class="nav-item">
+            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post">
+                <button type="submit" class="btn btn-outline-danger w-100 btn-sm">
+                    <i class="fas fa-sign-out-alt me-2"></i>Sair
+                </button>
+            </form>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item mb-2">
+            <a class="btn btn-outline-light w-100 btn-sm text-start" asp-area="Identity" asp-page="/Account/Login">
+                <i class="fas fa-sign-in-alt me-2"></i>Entrar
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="btn btn-warning w-100 btn-sm text-start text-dark fw-bold" asp-area="Identity" asp-page="/Account/Register">
+                <i class="fas fa-user-plus me-2"></i>Registrar
+            </a>
+        </li>
+    }
+</ul>

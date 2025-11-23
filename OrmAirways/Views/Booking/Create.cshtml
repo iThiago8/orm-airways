@@ -1,1 +1,247 @@
-﻿
+﻿@model OrmAirways.Models.Booking
+
+@{
+    ViewData["Title"] = "Nova Reserva";
+}
+
+<style>
+    .plane-fuselage {
+        border: 4px solid #ccc;
+        border-radius: 50px 50px 0 0;
+        padding: 40px 20px 20px 20px;
+        background-color: #f8f9fa;
+        max-width: 300px;
+        margin: 0 auto;
+        min-height: 400px;
+        position: relative;
+    }
+
+    .plane-cockpit {
+        position: absolute;
+        top: -40px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 60px solid transparent;
+        border-right: 60px solid transparent;
+        border-bottom: 60px solid #ccc;
+        z-index: -1;
+    }
+
+    .seats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr); 
+        gap: 10px;
+        justify-content: center;
+    }
+
+        .seats-grid .seat-item:nth-child(4n+2) {
+            margin-right: 20px;
+        }
+
+    .seat-item {
+        height: 40px;
+        background-color: white;
+        border: 2px solid #dee2e6;
+        border-radius: 5px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: bold;
+        transition: all 0.2s;
+        position: relative;
+    }
+
+        .seat-item:hover:not(.occupied):not(.selected) {
+            border-color: var(--primary-orange);
+            transform: scale(1.1);
+        }
+
+        .seat-item.occupied {
+            background-color: #e9ecef;
+            color: #adb5bd;
+            cursor: not-allowed;
+            border-color: transparent;
+        }
+
+        .seat-item.selected {
+            background-color: var(--primary-orange);
+            color: white;
+            border-color: var(--primary-orange);
+        }
+
+        .seat-item.business {
+            border-color: #6c5ce7;
+        }
+
+    .legend-box {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+        display: inline-block;
+        vertical-align: middle;
+        margin-right: 5px;
+    }
+</style>
+
+<div class="row justify-content-center">
+    <div class="col-lg-4 mb-4">
+        <div class="card shadow border-0 h-100">
+            <div class="card-header bg-dark text-white py-3">
+                <h5 class="mb-0"><i class="fas fa-ticket-alt me-2"></i>Dados da Reserva</h5>
+            </div>
+            <div class="card-body p-4">
+                <form asp-action="Create" id="bookingForm">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">1. Selecione o Cliente</label>
+                        <select asp-for="CustomerId" class="form-select" asp-items="ViewBag.CustomerId">
+                            <option value="">-- Escolha o Passageiro --</option>
+                        </select>
+                        <span asp-validation-for="CustomerId" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">2. Selecione o Voo</label>
+                        <select asp-for="FlightId" id="flightSelect" class="form-select" asp-items="ViewBag.FlightId">
+                            <option value="">-- Escolha o Voo --</option>
+                        </select>
+                        <span asp-validation-for="FlightId" class="text-danger small"></span>
+                    </div>
+
+                    <input type="hidden" asp-for="SeatId" id="selectedSeatId" />
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">3. Assento Escolhido</label>
+                        <input type="text" id="selectedSeatDisplay" class="form-control bg-white fw-bold text-primary" readonly placeholder="Selecione no mapa ao lado..." />
+                        <span asp-validation-for="SeatId" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success fw-bold py-3" id="btnSubmit" disabled>
+                            <i class="fas fa-check-circle me-2"></i>Confirmar Reserva
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card shadow border-0 h-100">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 text-secondary"><i class="fas fa-chair me-2"></i>Seleção de Assento</h5>
+            </div>
+            <div class="card-body text-center bg-light">
+
+                <div id="loadingSeats" class="py-5 text-muted" style="display:none;">
+                    <div class="spinner-border text-warning mb-2" role="status"></div>
+                    <p>Carregando mapa da aeronave...</p>
+                </div>
+
+                <div id="selectFlightMsg" class="py-5 text-muted">
+                    <i class="fas fa-arrow-left fa-2x mb-3"></i>
+                    <p>Selecione um voo ao lado para visualizar os assentos disponíveis.</p>
+                </div>
+
+                <div id="planeContainer" style="display:none;">
+                    <div class="d-flex justify-content-center gap-3 mb-4 small">
+                        <div><span class="legend-box border bg-white"></span> Livre</div>
+                        <div><span class="legend-box" style="background:#e9ecef;"></span> Ocupado</div>
+                        <div><span class="legend-box" style="background:var(--primary-orange);"></span> Selecionado</div>
+                    </div>
+
+                    <div class="plane-fuselage">
+                        <div class="plane-cockpit"></div>
+                        <div class="seats-grid" id="seatsGrid">
+                            <!-- Assentos serão injetados aqui via JS -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        $(document).ready(function () {
+            const flightSelect = $('#flightSelect');
+            const planeContainer = $('#planeContainer');
+            const loading = $('#loadingSeats');
+            const msg = $('#selectFlightMsg');
+            const grid = $('#seatsGrid');
+            const seatInput = $('#selectedSeatId');
+            const seatDisplay = $('#selectedSeatDisplay');
+            const submitBtn = $('#btnSubmit');
+
+            flightSelect.change(function () {
+                var flightId = $(this).val();
+
+                seatInput.val('');
+                seatDisplay.val('');
+                submitBtn.prop('disabled', true);
+                grid.empty();
+
+                if (!flightId) {
+                    msg.show();
+                    planeContainer.hide();
+                    return;
+                }
+
+                msg.hide();
+                planeContainer.hide();
+                loading.show();
+
+                $.getJSON('/Booking/GetSeatsForFlight?flightId=' + flightId, function (seats) {
+                    loading.hide();
+                    planeContainer.show();
+
+                    if (!seats || seats.length === 0) {
+                        grid.html('<div class="col-12 text-danger">Nenhum assento configurado nesta aeronave.</div>');
+                        return;
+                    }
+
+                    $.each(seats, function (index, seat) {
+                        var cssClass = 'seat-item';
+                        if (seat.isTaken) cssClass += ' occupied';
+                        if (seat.class === 'Business') cssClass += ' business';
+
+                        var div = $('<div>', {
+                            class: cssClass,
+                            text: seat.code,
+                            'data-id': seat.id,
+                            'title': seat.class
+                        });
+
+                        if (!seat.isTaken) {
+                            div.click(function () {
+                                $('.seat-item').removeClass('selected');
+
+                                $(this).addClass('selected');
+
+                                seatInput.val(seat.id);
+                                seatDisplay.val(seat.code + ' (' + seat.class + ')');
+                                submitBtn.prop('disabled', false);
+                            });
+                        }
+
+                        grid.append(div);
+                    });
+                }).fail(function() {
+                    loading.hide();
+                    alert("Erro ao carregar mapa de assentos.");
+                });
+            });
+        });
+    </script>
+}

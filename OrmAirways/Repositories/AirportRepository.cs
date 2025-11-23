@@ -5,43 +5,36 @@ using OrmAirways.Interfaces;
 
 namespace OrmAirways.Repositories
 {
-    public class AirportRepository : IAirportRepository
+    public class AirportRepository(AirwaysDbContext context) : IAirportRepository
     {
-        private readonly AirwaysDbContext _context;
-
-        public AirportRepository(AirwaysDbContext context)
-        {
-            _context = context;
-        }
-
         public async Task Create(Airport airport)
         {
-            await _context.Airports.AddAsync(airport);
-            await _context.SaveChangesAsync();
+            await context.Airports.AddAsync(airport);
+            await context.SaveChangesAsync();
         }
 
         public async Task Delete(Airport airport)
         {
-            _context.Airports.Remove(airport);
-            await _context.SaveChangesAsync();
+            context.Airports.Remove(airport);
+            await context.SaveChangesAsync();
         }
+
         public async Task Update(Airport airport)
         {
-            _context.Airports.Update(airport);
-            await _context.SaveChangesAsync();
+            context.Airports.Update(airport);
+            await context.SaveChangesAsync();
         }
 
-        public async Task<Airport?> GetById(int id)
+        public async Task<Airport?> GetById(Guid id)
         {
-            var airport = await _context.Airports.Where(a => a.ID == id).FirstOrDefaultAsync();
-
-            return airport;
+            return await context.Airports.FindAsync(id);
         }
+
         public async Task<List<Airport>> GetAll()
         {
-            var data = await _context.Airports.ToListAsync();
-            return data;
+            return await context.Airports
+                .AsNoTracking()
+                .ToListAsync();
         }
-
     }
 }

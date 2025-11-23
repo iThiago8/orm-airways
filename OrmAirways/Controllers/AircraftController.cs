@@ -1,108 +1,124 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using OrmAirways.Interfaces;
 using OrmAirways.Models;
-using System.Diagnostics;
 
 namespace OrmAirways.Controllers
 {
-	public class AircraftController : Controller
-	{
-		private readonly IAircraftRepository _aircraftRepository;
-		private readonly ISeatRepository _seatRepository;
+    [Authorize(Roles = "Admin")]
+    public class AircraftController(
+        IAircraftRepository aircraftRepository,
+        ISeatRepository seatRepository
+    ) : Controller
+    {
+        public async Task<IActionResult> Index()
+        {
+            return View(await aircraftRepository.GetAll());
+        }
 
-		public AircraftController(IAircraftRepository aircraftRepository, ISeatRepository seatRepository)
-		{
-			_aircraftRepository = aircraftRepository; //Constructor Injection; Construtor feito
-			_seatRepository = seatRepository;
-		}
+        public async Task<IActionResult> Details(Guid? id)
+        {
+            if (!id.HasValue) 
+                return BadRequest();
+            
+            var aircraft = await aircraftRepository.GetById(id.Value);
+            if (aircraft == null) 
+                return NotFound();
+            
+            return View(aircraft);
+        }
 
-		[HttpGet]
-		public async Task<IActionResult> Index()
-		{
-			return View(await _aircraftRepository.GetAll());
-		}
+        public IActionResult Create()
+        {
+            return View();
+        }
 
-		[HttpGet]
-		public IActionResult Create()
-		{
-			return View();
-		}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Aircraft aircraft)
+        {
+            if (!ModelState.IsValid) 
+                return View(aircraft);
 
-		[HttpPost]
-		public async Task<IActionResult> Create(Aircraft aircraft)
-		{
-			if (ModelState.IsValid)
-			{
-				await _aircraftRepository.Create(aircraft);
-				string[] layout = { "Janela", "Corredor", "Corredor", "Janela" };
+            try
+            {
+                if (aircraft.Id == Guid.Empty) aircraft.Id = Guid.NewGuid();
 
-				for (int i = 0; i < aircraft.SeatNumber; i++)
-				{
-					int location = i % layout.Length;
+                await aircraftRepository.Create(aircraft);
 
-					Seat seat = new Seat()
-					{
-						Aircraft = aircraft,
-						AircraftID = aircraft.ID,
-						Location = layout[location]
-					};
+                string[] seatPattern = { "Janela", "Corredor", "Corredor", "Janela" };
 
-					await _seatRepository.Create(seat);
+                for (int i = 0; i < aircraft.Capacity; i++)
+                {
+                    int patternIndex = i % seatPattern.Length;
 
-				}
+                    var seat = new Seat
+                    {
+                        Id = Guid.NewGuid(),
+                        AircraftId = aircraft.Id,
+                        Code = $"{(i + 1)}",
+                        ClassType = "Economy"
+                    };
 
-				return RedirectToAction("Index");
-			}
+                    await seatRepository.Create(seat);
+                }
 
-			return View(aircraft);
-		}
+                TempData["SuccessMessage"] = "Aeronave cadastrada com sucesso!";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View(aircraft);
+            }
+        }
 
-		[HttpPost]
-		public async Task<IActionResult> Update(int? id, Aircraft aircraft)
-		{
-			if (!id.HasValue)
-			{
-				return BadRequest();
-			}
-			if (ModelState.IsValid)
-			{
-				await _aircraftRepository.Update(aircraft);
-				return RedirectToAction("Index");
-			}
-			return View(aircraft);
-		}
+        public async Task<IActionResult> Update(Guid? id)
+        {
+            if (!id.HasValue) 
+                return BadRequest();
+            
+            var aircraft = await aircraftRepository.GetById(id.Value);
+            if (aircraft == null)
+                return NotFound();
+            
+            return View(aircraft);
+        }
 
-		[HttpGet]
-		public async Task<IActionResult> Update(int? id)
-		{
-			var aircraft = await _aircraftRepository.GetById(id.Value);
-			if (aircraft == null) // = símbolo de atribuição -> == símbolo de comparação.
-			{
-				return NotFound();
-			}
-			if (!id.HasValue)
-			{
-				return BadRequest();
-			}
-			return View(aircraft);
-		}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update(Guid id, Aircraft aircraft)
+        {
+            if (id != aircraft.Id) 
+                return BadRequest();
 
-		[HttpPost]
-		public async Task<IActionResult> Delete(int id)
-		{
-			var aircraft = await _aircraftRepository.GetById(id);
-			if(aircraft == null)
-			{
-				return NotFound();
-			}
-			await _aircraftRepository.Delete(aircraft);
-			return RedirectToAction("Index");
-		}
+            if (!ModelState.IsValid) 
+                return View(aircraft);
 
-		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-		public IActionResult Error()
-		{
-			return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-		}
-	}
+            try
+            {
+                await aircraftRepository.Update(aircraft);
+                TempData["SuccessMessage"] = "Aeronave atualizada!";
+                return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                ModelState.AddModelError("", "Erro ao atualizar.");
+                return View(aircraft);
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var aircraft = await aircraftRepository.GetById(id);
+            if (aircraft == null) 
+                return NotFound();
+
+            await aircraftRepository.Delete(aircraft);
+            TempData["SuccessMessage"] = "Aeronave removida com sucesso.";
+            return RedirectToAction(nameof(Index));
+        }
+    }
 }

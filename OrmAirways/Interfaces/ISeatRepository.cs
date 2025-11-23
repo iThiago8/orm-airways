@@ -7,7 +7,8 @@ namespace OrmAirways.Interfaces
 		public Task Create (Seat seat);
 		public Task Update (Seat seat);
 		public Task Delete(Seat seat);
-		public Task<Seat?> GetById (int id);
+		public Task<Seat?> GetById (Guid id);
+		public Task<List<Seat>?> GetByAircraftId(Guid id);
 		public Task<List<Seat>?> GetAll ();
 	}
 }

@@ -27,12 +27,21 @@ namespace OrmAirways.Repositories
 
         public async Task<List<Booking>?> GetAll()
         {
-            return await context.Bookings.ToListAsync();
+            return await context.Bookings
+                .AsNoTracking()
+                .Include(b => b.Customer)
+                .Include(b => b.Flight)
+                .Include(b => b.Seat)
+                .ToListAsync();
         }
 
-        public async Task<Booking?> GetById(int id)
+        public async Task<Booking?> GetById(Guid id)
         {
-            return await context.Bookings.FindAsync(id);
+            return await context.Bookings
+                .Include(b => b.Customer)
+                .Include(b => b.Flight)
+                .Include(b => b.Seat)
+                .FirstOrDefaultAsync(b => b.Id == id);
         }
     }
 }

@@ -1,92 +1,88 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using OrmAirways.Interfaces;
 using OrmAirways.Models;
-using System.Diagnostics;
 
 namespace OrmAirways.Controllers
 {
-	public class SeatController : Controller
-	{
-		private readonly ISeatRepository _seatRepository;
+    [Authorize(Roles = "Admin")]
+    public class SeatController(
+        ISeatRepository seatRepository,
+        IAircraftRepository aircraftRepository
+    ) : Controller
+    {
 
-		public SeatController(ISeatRepository seatRepository)
-		{
-			_seatRepository = seatRepository;
-		}
-		[HttpGet]
-		public async Task<IActionResult> Index()
-		{
-			return View(await _seatRepository.GetAll());
-		}
+        public async Task<IActionResult> Index(Guid? aircraftId)
+        {
+            ViewBag.Aircrafts = new SelectList(await aircraftRepository.GetAll(), "Id", "RegistrationNumber", aircraftId);
+            ViewBag.SelectedAircraftId = aircraftId;
 
-		[HttpGet]
-		public IActionResult Create()
-		{
-			return View();
-		}
+            if (aircraftId.HasValue)
+            {
+                var seats = await seatRepository.GetByAircraftId(aircraftId.Value);
+                return View(seats);
+            }
 
-		[HttpPost]
-		public async Task<IActionResult> Create(Seat seat)
-		{
-			if(ModelState.IsValid)
-			{
-				await _seatRepository.Create(seat);
-				return RedirectToAction("Index");
-			}
-			return View(seat);
-		}
+            return View(new List<Seat>());
+        }
 
-		[HttpGet]
-		public async Task<IActionResult> Update (int? id)
-		{
-			var seat = await _seatRepository.GetById(id.Value);
-			if (seat == null)
-			{
-				return NotFound();
-			}
-			if (!id.HasValue)
-			{
-				return BadRequest();
-			}
-			return View(seat);
-		}
+        public async Task<IActionResult> Update(Guid? id)
+        {
+            if (!id.HasValue) 
+                return BadRequest();
 
-		[HttpPost]
-		public async Task<IActionResult> Update (int? id, Seat seat)
-		{
-			if (!id.HasValue)
-			{
-				return BadRequest();
-			}
-			if (ModelState.IsValid)
-			{
-				await _seatRepository.Update(seat);
-				return RedirectToAction("Index");
-			}
-			return View(seat);
-		}
+            var seat = await seatRepository.GetById(id.Value);
 
-		[HttpPost]
-		public async Task<IActionResult> Delete(int id)
-		{
-			var seat = await _seatRepository.GetById(id);
-			if (seat == null)
-			{
-				return NotFound();
-			}
-			await _seatRepository.Delete(seat);
-			return RedirectToAction("Index");
-		}
+            if (seat == null) 
+                return NotFound();
 
-		public IActionResult Privacy()
-		{
-			return View();
-		}
+            return View(seat);
+        }
 
-		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-		public IActionResult Error()
-		{
-			return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-		}
-	}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update(Guid id, Seat seat)
+        {
+            if (id != seat.Id) 
+                return BadRequest();
+
+            try
+            {
+                var originalSeat = await seatRepository.GetById(id);
+                if (originalSeat == null) 
+                    return NotFound();
+
+                originalSeat.Code = seat.Code;
+                originalSeat.ClassType = seat.ClassType;
+
+                await seatRepository.Update(originalSeat);
+
+                TempData["SuccessMessage"] = "Assento atualizado!";
+
+                return RedirectToAction(nameof(Index), new { aircraftId = originalSeat.AircraftId });
+            }
+            catch
+            {
+                ModelState.AddModelError("", "Erro ao atualizar.");
+                return View(seat);
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var seat = await seatRepository.GetById(id);
+            if (seat == null) 
+                return NotFound();
+
+            var aircraftId = seat.AircraftId;
+
+            await seatRepository.Delete(seat);
+            TempData["SuccessMessage"] = "Assento removido manualmente.";
+
+            return RedirectToAction(nameof(Index), new { aircraftId });
+        }
+    }
 }
