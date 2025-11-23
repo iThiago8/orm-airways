@@ -16,9 +16,13 @@ namespace OrmAirways.Controllers
 
         public async Task<IActionResult> Details(Guid? id)
         {
-            if (!id.HasValue) return BadRequest();
+            if (!id.HasValue) 
+                return BadRequest();
+            
             var aircraft = await aircraftRepository.GetById(id.Value);
-            if (aircraft == null) return NotFound();
+            if (aircraft == null) 
+                return NotFound();
+            
             return View(aircraft);
         }
 
@@ -31,7 +35,8 @@ namespace OrmAirways.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Aircraft aircraft)
         {
-            if (!ModelState.IsValid) return View(aircraft);
+            if (!ModelState.IsValid) 
+                return View(aircraft);
 
             try
             {
@@ -68,9 +73,13 @@ namespace OrmAirways.Controllers
 
         public async Task<IActionResult> Update(Guid? id)
         {
-            if (!id.HasValue) return BadRequest();
+            if (!id.HasValue) 
+                return BadRequest();
+            
             var aircraft = await aircraftRepository.GetById(id.Value);
-            if (aircraft == null) return NotFound();
+            if (aircraft == null)
+                return NotFound();
+            
             return View(aircraft);
         }
 
@@ -78,8 +87,11 @@ namespace OrmAirways.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(Guid id, Aircraft aircraft)
         {
-            if (id != aircraft.Id) return BadRequest();
-            if (!ModelState.IsValid) return View(aircraft);
+            if (id != aircraft.Id) 
+                return BadRequest();
+
+            if (!ModelState.IsValid) 
+                return View(aircraft);
 
             try
             {
@@ -99,7 +111,8 @@ namespace OrmAirways.Controllers
         public async Task<IActionResult> Delete(Guid id)
         {
             var aircraft = await aircraftRepository.GetById(id);
-            if (aircraft == null) return NotFound();
+            if (aircraft == null) 
+                return NotFound();
 
             await aircraftRepository.Delete(aircraft);
             TempData["SuccessMessage"] = "Aeronave removida com sucesso.";

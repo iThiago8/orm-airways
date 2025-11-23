@@ -13,9 +13,14 @@ namespace OrmAirways.Controllers
 
         public async Task<IActionResult> Details(Guid? id)
         {
-            if (!id.HasValue) return BadRequest();
+            if (!id.HasValue) 
+                return BadRequest();
+
             var airport = await airportRepository.GetById(id.Value);
-            if (airport == null) return NotFound();
+            
+            if (airport == null) 
+                return NotFound();
+            
             return View(airport);
         }
 
@@ -28,7 +33,8 @@ namespace OrmAirways.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Airport airport)
         {
-            if (!ModelState.IsValid) return View(airport);
+            if (!ModelState.IsValid)
+                return View(airport);
 
             try
             {
@@ -48,9 +54,13 @@ namespace OrmAirways.Controllers
 
         public async Task<IActionResult> Update(Guid? id)
         {
-            if (!id.HasValue) return BadRequest();
+            if (!id.HasValue) 
+                return BadRequest();
+
             var airport = await airportRepository.GetById(id.Value);
-            if (airport == null) return NotFound();
+            if (airport == null) 
+                return NotFound();
+            
             return View(airport);
         }
 
@@ -58,8 +68,11 @@ namespace OrmAirways.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(Guid id, Airport airport)
         {
-            if (id != airport.Id) return BadRequest();
-            if (!ModelState.IsValid) return View(airport);
+            if (id != airport.Id) 
+                return BadRequest();
+            
+            if (!ModelState.IsValid) 
+                return View(airport);
 
             try
             {
@@ -79,7 +92,9 @@ namespace OrmAirways.Controllers
         public async Task<IActionResult> Delete(Guid id)
         {
             var airport = await airportRepository.GetById(id);
-            if (airport == null) return NotFound();
+            
+            if (airport == null) 
+                return NotFound();
 
             await airportRepository.Delete(airport);
             TempData["SuccessMessage"] = "Aeroporto removido.";

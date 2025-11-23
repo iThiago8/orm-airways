@@ -58,9 +58,17 @@
                                     <i class="fas fa-couch text-secondary me-2"></i>@item.Code
                                 </td>
                                 <td>
-                                    @if (item.ClassType == "Business" || item.ClassType == "Executiva")
+                                    @if (item.ClassType == "Business")
                                     {
                                         <span class="badge bg-primary">Executiva</span>
+                                    }
+                                    else if (item.ClassType == "First")
+                                    {
+                                        <span class="badge bg-primary">Primeira Classe</span>
+                                    }
+                                    else if(item.ClassType == "Blocked")
+                                    {
+                                        <span class="badge bg-danger">Em manutenção</span>
                                     }
                                     else
                                     {

@@ -13,16 +13,13 @@ namespace OrmAirways.Controllers
 
         public async Task<IActionResult> Index(Guid? aircraftId)
         {
-            var allSeats = await seatRepository.GetAll();
-            var aircrafts = await aircraftRepository.GetAll();
-
-            ViewBag.Aircrafts = new SelectList(aircrafts, "Id", "RegistrationNumber", aircraftId);
+            ViewBag.Aircrafts = new SelectList(await aircraftRepository.GetAll(), "Id", "RegistrationNumber", aircraftId);
             ViewBag.SelectedAircraftId = aircraftId;
 
             if (aircraftId.HasValue)
             {
-                var filteredSeats = allSeats?.Where(s => s.AircraftId == aircraftId.Value).OrderBy(s => s.Code).ToList();
-                return View(filteredSeats);
+                var seats = await seatRepository.GetByAircraftId(aircraftId.Value);
+                return View(seats);
             }
 
             return View(new List<Seat>());
@@ -30,10 +27,13 @@ namespace OrmAirways.Controllers
 
         public async Task<IActionResult> Update(Guid? id)
         {
-            if (!id.HasValue) return BadRequest();
+            if (!id.HasValue) 
+                return BadRequest();
 
             var seat = await seatRepository.GetById(id.Value);
-            if (seat == null) return NotFound();
+
+            if (seat == null) 
+                return NotFound();
 
             return View(seat);
         }
@@ -42,13 +42,14 @@ namespace OrmAirways.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(Guid id, Seat seat)
         {
-            if (id != seat.Id) return BadRequest();
-
+            if (id != seat.Id) 
+                return BadRequest();
 
             try
             {
                 var originalSeat = await seatRepository.GetById(id);
-                if (originalSeat == null) return NotFound();
+                if (originalSeat == null) 
+                    return NotFound();
 
                 originalSeat.Code = seat.Code;
                 originalSeat.ClassType = seat.ClassType;
@@ -71,7 +72,8 @@ namespace OrmAirways.Controllers
         public async Task<IActionResult> Delete(Guid id)
         {
             var seat = await seatRepository.GetById(id);
-            if (seat == null) return NotFound();
+            if (seat == null) 
+                return NotFound();
 
             var aircraftId = seat.AircraftId;
 

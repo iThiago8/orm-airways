@@ -21,7 +21,7 @@ namespace OrmAirways.Controllers
             ViewBag.DestinationId = new SelectList(airports, "Id", "IataCode", selectedDestination);
 
             var aircraftList = aircrafts.Select(a => new {
-                Id = a.Id,
+                a.Id,
                 DisplayText = $"{a.Model} ({a.RegistrationNumber})"
             });
             ViewBag.AircraftId = new SelectList(aircraftList, "Id", "DisplayText", selectedAircraft);
@@ -34,9 +34,14 @@ namespace OrmAirways.Controllers
 
         public async Task<IActionResult> Details(Guid? id)
         {
-            if (!id.HasValue) return BadRequest();
+            if (!id.HasValue) 
+                return BadRequest();
+            
             var flight = await flightRepository.GetById(id.Value);
-            if (flight == null) return NotFound();
+
+            if (flight == null) 
+                
+                return NotFound();
             return View(flight);
         }
 
@@ -79,9 +84,13 @@ namespace OrmAirways.Controllers
 
         public async Task<IActionResult> Update(Guid? id)
         {
-            if (!id.HasValue) return BadRequest();
+            if (!id.HasValue) 
+                return BadRequest();
+
             var flight = await flightRepository.GetById(id.Value);
-            if (flight == null) return NotFound();
+            
+            if (flight == null) 
+                return NotFound();
 
             await PopulateViewBags(flight.OriginId, flight.DestinationId, flight.AircraftId);
             return View(flight);
@@ -91,7 +100,8 @@ namespace OrmAirways.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(Guid id, Flight flight)
         {
-            if (id != flight.Id) return BadRequest();
+            if (id != flight.Id) 
+                return BadRequest();
 
             if (flight.OriginId == flight.DestinationId)
                 ModelState.AddModelError("DestinationId", "O aeroporto de destino não pode ser o mesmo de origem.");
@@ -126,7 +136,7 @@ namespace OrmAirways.Controllers
             var flight = await flightRepository.GetById(id);
             if (flight == null) return NotFound();
 
-            if (flight.Bookings != null && flight.Bookings.Any())
+            if (flight.Bookings != null && flight.Bookings.Count != 0)
             {
                 TempData["ErrorMessage"] = "Não é possível excluir este voo pois já existem passagens vendidas para ele.";
             }

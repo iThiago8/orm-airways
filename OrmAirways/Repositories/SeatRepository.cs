@@ -27,6 +27,16 @@ namespace OrmAirways.Repositories
                 .ToListAsync();
         }
 
+        public async Task<List<Seat>?> GetByAircraftId(Guid id)
+        {
+            return await context.Seats
+                .AsNoTracking()
+                .Where(s => s.AircraftId == id)
+                .OrderBy(s => s.CreatedAt)
+                .ToListAsync();
+
+        }
+
         public async Task<Seat?> GetById(Guid id)
         {
             return await context.Seats

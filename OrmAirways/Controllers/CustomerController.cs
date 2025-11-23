@@ -13,9 +13,13 @@ namespace OrmAirways.Controllers
 
         public async Task<IActionResult> Details(Guid? id)
         {
-            if (!id.HasValue) return BadRequest();
+            if (!id.HasValue) 
+                return BadRequest();
+
             var customer = await customerRepository.GetById(id.Value);
-            if (customer == null) return NotFound();
+
+            if (customer == null) 
+                return NotFound();
             return View(customer);
         }
 
@@ -28,13 +32,14 @@ namespace OrmAirways.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Customer customer)
         {
-            if (!ModelState.IsValid) return View(customer);
+            if (!ModelState.IsValid) 
+                return View(customer);
 
             try
             {
                 if (customer.Id == Guid.Empty) customer.Id = Guid.NewGuid();
 
-                // Regra de Negócio: Validar se CPF já existe poderia ser feito aqui
+                // Regra de Negócio: Validar se CPF já existe
 
                 await customerRepository.Create(customer);
 
@@ -50,9 +55,14 @@ namespace OrmAirways.Controllers
 
         public async Task<IActionResult> Update(Guid? id)
         {
-            if (!id.HasValue) return BadRequest();
+            if (!id.HasValue) 
+
+                return BadRequest();
             var customer = await customerRepository.GetById(id.Value);
-            if (customer == null) return NotFound();
+
+            if (customer == null) 
+                return NotFound();
+
             return View(customer);
         }
 
@@ -60,8 +70,11 @@ namespace OrmAirways.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(Guid id, Customer customer)
         {
-            if (id != customer.Id) return BadRequest();
-            if (!ModelState.IsValid) return View(customer);
+            if (id != customer.Id) 
+                return BadRequest();
+
+            if (!ModelState.IsValid) 
+                return View(customer);
 
             try
             {
@@ -81,9 +94,9 @@ namespace OrmAirways.Controllers
         public async Task<IActionResult> Delete(Guid id)
         {
             var customer = await customerRepository.GetById(id);
-            if (customer == null) return NotFound();
+            if (customer == null) 
+                return NotFound();
 
-            // Nota: O banco deve bloquear a exclusão se houver reservas (Restrict)
             try
             {
                 await customerRepository.Delete(customer);

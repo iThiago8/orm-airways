@@ -45,9 +45,14 @@ namespace OrmAirways.Controllers
 
         public async Task<IActionResult> Details(Guid? id)
         {
-            if (!id.HasValue) return BadRequest();
+            if (!id.HasValue) 
+                return BadRequest();
+
             var booking = await bookingRepository.GetById(id.Value);
-            if (booking == null) return NotFound();
+
+            if (booking == null) 
+                return NotFound();
+
             return View(booking);
         }
 
@@ -61,7 +66,9 @@ namespace OrmAirways.Controllers
         public async Task<IActionResult> GetSeatsForFlight(Guid flightId)
         {
             var flight = await flightRepository.GetById(flightId);
-            if (flight == null) return NotFound();
+
+            if (flight == null) 
+                return NotFound();
 
             var allSeats = await seatRepository.GetAll() ?? [];
 
