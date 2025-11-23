@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using OrmAirways.Models;
 
 namespace OrmAirways.Data
 {
-    public class AirwaysDbContext(DbContextOptions<AirwaysDbContext> options) : DbContext(options)
+    public class AirwaysDbContext(DbContextOptions<AirwaysDbContext> options) : IdentityDbContext(options)
     {
         public DbSet<Aircraft> Aircrafts { get; set; }
         public DbSet<Airport> Airports { get; set; }
@@ -14,6 +15,8 @@ namespace OrmAirways.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<Airport>().ComplexProperty(a => a.Location);
 
             modelBuilder.Entity<Aircraft>().ToTable("Aircraft");

@@ -1,13 +1,13 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using OrmAirways.Data;
 using OrmAirways.Interfaces;
 using OrmAirways.Repositories;
-using OrmAirways.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
 
 builder.Services.AddDbContext<AirwaysDbContext>(options =>
     options.UseSqlServer(
@@ -15,15 +15,41 @@ builder.Services.AddDbContext<AirwaysDbContext>(options =>
     )
 );
 
+builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false;
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequiredLength = 4;
+})
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<AirwaysDbContext>();
+
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IAirportRepository, AirportRepository>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IAircraftRepository, AircraftRepository>();
 builder.Services.AddScoped<ISeatRepository, SeatRepository>();
 builder.Services.AddScoped<IFlightRepository, FlightRepository>();
-builder.Services.AddScoped<IBookingService, BookingService>();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        await SeedData.Initialize(services); // Cria o usuário admin
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Um erro ocorreu ao semear o banco de dados.");
+    }
+}
+
 
 if (!app.Environment.IsDevelopment())
 {
@@ -31,18 +57,20 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-
-
 app.UseHttpsRedirection();
-app.UseRouting();
-app.UseAuthorization();
+app.UseStaticFiles();
 
-app.MapStaticAssets();
+app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
+    .RequireAuthorization();
+
+app.MapRazorPages();
 
 CreateDbIfNotExists(app);
 

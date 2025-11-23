@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using OrmAirways.Interfaces;
 using OrmAirways.Models;
 
 namespace OrmAirways.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class AirportController(IAirportRepository airportRepository) : Controller
     {
         public async Task<IActionResult> Index()

@@ -2,89 +2,125 @@
 
 @{
     ViewData["Title"] = "Dashboard";
+    bool isAdmin = User.IsInRole("Admin");
 }
 
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2 text-secondary">Visão Geral</h1>
-    
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+    <div>
+        <h1 class="h2 text-secondary">@(isAdmin ? "Painel Administrativo" : "Minhas Viagens")</h1>
+        @if (!isAdmin)
+        {
+            <span class="text-muted">Bem-vindo a bordo, viajante.</span>
+        }
+    </div>
+
+    <div class="btn-toolbar mb-2 mb-md-0">
+        @if (isAdmin)
+        {
+            <div class="btn-group me-2">
+                <button type="button" class="btn btn-sm btn-outline-secondary">Relatórios</button>
+            </div>
+        }
+        else
+        {
+            <a asp-controller="Booking" asp-action="Create" class="btn btn-warning fw-bold text-white shadow-sm">
+                <i class="fas fa-plane me-2"></i>Comprar Passagem
+            </a>
+        }
+    </div>
 </div>
 
 <div class="row g-4 mb-4">
-    <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-body d-flex align-items-center justify-content-between">
-                <div>
-                    <h6 class="text-muted mb-1">Passageiros</h6>
-                    <h3 class="fw-bold mb-0 text-dark">@Model.TotalCustomers</h3>
+    @if (isAdmin)
+    {
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <h6 class="text-muted mb-1">Passageiros</h6>
+                        <h3 class="fw-bold mb-0 text-dark">@Model.TotalCustomers</h3>
+                    </div>
+                    <div class="rounded-circle bg-primary bg-opacity-10 p-3 text-primary">
+                        <i class="fas fa-users fa-2x"></i>
+                    </div>
                 </div>
-                <div class="rounded-circle bg-primary bg-opacity-10 p-3 text-primary">
-                    <i class="fas fa-users fa-2x"></i>
-                </div>
-            </div>
-            <div class="card-footer bg-white border-0 py-2">
-                <small class="text-success fw-bold"><i class="fas fa-arrow-up"></i> Ativos na base</small>
+                <div class="card-footer bg-white border-0 py-2"><small class="text-success fw-bold">Ativos</small></div>
             </div>
         </div>
-    </div>
 
-    <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-body d-flex align-items-center justify-content-between">
-                <div>
-                    <h6 class="text-muted mb-1">Reservas Feitas</h6>
-                    <h3 class="fw-bold mb-0 text-dark">@Model.TotalBookings</h3>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <h6 class="text-muted mb-1">Vendas Totais</h6>
+                        <h3 class="fw-bold mb-0 text-dark">@Model.TotalBookings</h3>
+                    </div>
+                    <div class="rounded-circle bg-success bg-opacity-10 p-3 text-success">
+                        <i class="fas fa-chart-line fa-2x"></i>
+                    </div>
                 </div>
-                <div class="rounded-circle bg-success bg-opacity-10 p-3 text-success">
-                    <i class="fas fa-ticket-alt fa-2x"></i>
-                </div>
-            </div>
-            <div class="card-footer bg-white border-0 py-2">
-                <small class="text-muted">Total acumulado</small>
+                <div class="card-footer bg-white border-0 py-2"><small class="text-muted">Acumulado</small></div>
             </div>
         </div>
-    </div>
 
-    <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-body d-flex align-items-center justify-content-between">
-                <div>
-                    <h6 class="text-muted mb-1">Frota Aérea</h6>
-                    <h3 class="fw-bold mb-0 text-dark">@Model.TotalAircrafts</h3>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <h6 class="text-muted mb-1">Frota</h6>
+                        <h3 class="fw-bold mb-0 text-dark">@Model.TotalAircrafts</h3>
+                    </div>
+                    <div class="rounded-circle bg-warning bg-opacity-10 p-3 text-warning">
+                        <i class="fas fa-plane fa-2x"></i>
+                    </div>
                 </div>
-                <div class="rounded-circle bg-warning bg-opacity-10 p-3 text-warning">
-                    <i class="fas fa-plane fa-2x"></i>
-                </div>
-            </div>
-            <div class="card-footer bg-white border-0 py-2">
-                <small class="text-muted">Aeronaves operacionais</small>
+                <div class="card-footer bg-white border-0 py-2"><small class="text-muted">Aeronaves</small></div>
             </div>
         </div>
-    </div>
+    }
+    else
+    {
+        <div class="col-12 col-md-6">
+            <div class="card border-0 shadow-sm h-100 bg-white">
+                <div class="card-body d-flex align-items-center">
+                    <div class="rounded-circle bg-warning bg-opacity-10 p-4 text-warning me-3">
+                        <i class="fas fa-ticket-alt fa-2x"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1">Histórico de Viagens</h6>
+                        <h3 class="fw-bold mb-0 text-dark">@Model.TotalBookings <small class="fs-6 text-muted">reservas</small></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    <div class="col-12 col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-body d-flex align-items-center justify-content-between">
-                <div>
-                    <h6 class="text-muted mb-1">Aeroportos</h6>
-                    <h3 class="fw-bold mb-0 text-dark">@Model.TotalAirports</h3>
+        <div class="col-12 col-md-6">
+            <div class="card border-0 shadow-sm h-100 bg-white">
+                <div class="card-body d-flex align-items-center">
+                    <div class="rounded-circle bg-info bg-opacity-10 p-4 text-info me-3">
+                        <i class="fas fa-map-marked-alt fa-2x"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1">Destinos Conectados</h6>
+                        <h3 class="fw-bold mb-0 text-dark">@Model.TotalAirports <small class="fs-6 text-muted">opções</small></h3>
+                    </div>
                 </div>
-                <div class="rounded-circle bg-info bg-opacity-10 p-3 text-info">
-                    <i class="fas fa-building fa-2x"></i>
-                </div>
-            </div>
-            <div class="card-footer bg-white border-0 py-2">
-                <small class="text-muted">Destinos disponíveis</small>
             </div>
         </div>
-    </div>
+    }
 </div>
 
 <div class="row">
     <div class="col-12">
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 text-secondary"><i class="fas fa-calendar-alt me-2"></i>Próximos Voos Programados</h5>
-                <a asp-controller="Flight" asp-action="Create" class="btn btn-sm btn-warning text-white fw-bold">Novo Voo</a>
+                <h5 class="mb-0 text-secondary">
+                    <i class="fas fa-calendar-alt me-2"></i>@(ViewBag.ListTitle ?? "Próximos Voos")
+                </h5>
+                @if (isAdmin)
+                {
+                    <a asp-controller="Flights" asp-action="Create" class="btn btn-sm btn-dark fw-bold">Gerenciar Voos</a>
+                }
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
@@ -92,8 +128,7 @@
                         <thead class="table-light">
                             <tr>
                                 <th class="ps-4">Voo</th>
-                                <th>Origem</th>
-                                <th>Destino</th>
+                                <th>Rota</th>
                                 <th>Partida</th>
                                 <th>Aeronave</th>
                                 <th class="text-end pe-4">Status</th>
@@ -106,12 +141,19 @@
                                 {
                                     <tr>
                                         <td class="ps-4 fw-bold text-primary">@flight.FlightNumber</td>
-                                        <td>@flight.Origin?.IataCode</td>
-                                        <td>@flight.Destination?.IataCode</td>
-                                        <td>@flight.DepartureTime.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td>
+                                            <div class="fw-bold">@flight.Origin?.IataCode <i class="fas fa-arrow-right mx-1 text-muted small"></i> @flight.Destination?.IataCode</div>
+                                            <small class="text-muted">@flight.Destination?.Location?.City</small>
+                                        </td>
+                                        <td>
+                                            <div class="text-dark fw-bold">@flight.DepartureTime.ToString("dd/MM/yyyy")</div>
+                                            <small class="text-muted">@flight.DepartureTime.ToString("HH:mm")</small>
+                                        </td>
                                         <td>@flight.Aircraft?.Model</td>
                                         <td class="text-end pe-4">
-                                            <span class="badge bg-success rounded-pill">Programado</span>
+                                            <span class="badge bg-success bg-opacity-75 rounded-pill">
+                                                @(ViewBag.ListStatus ?? "Programado")
+                                            </span>
                                         </td>
                                     </tr>
                                 }
@@ -119,8 +161,9 @@
                             else
                             {
                                 <tr>
-                                    <td colspan="6" class="text-center py-4 text-muted">
-                                        Nenhum voo programado para os próximos dias.
+                                    <td colspan="5" class="text-center py-5 text-muted">
+                                        <i class="fas fa-plane-slash fa-3x mb-3 text-light"></i>
+                                        <p class="mb-0">Não há voos programados para exibir no momento.</p>
                                     </td>
                                 </tr>
                             }

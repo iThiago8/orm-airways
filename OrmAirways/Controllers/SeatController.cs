@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OrmAirways.Interfaces;
 using OrmAirways.Models;
 
 namespace OrmAirways.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class SeatController(
         ISeatRepository seatRepository,
         IAircraftRepository aircraftRepository

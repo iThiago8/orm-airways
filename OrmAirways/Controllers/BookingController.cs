@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OrmAirways.Interfaces;
@@ -9,12 +10,24 @@ namespace OrmAirways.Controllers
         IBookingRepository bookingRepository,
         IFlightRepository flightRepository,
         ICustomerRepository customerRepository,
-        ISeatRepository seatRepository) : Controller
+        ISeatRepository seatRepository,
+        UserManager<IdentityUser> userManager) : Controller
     {
         private async Task PopulateViewBags()
         {
             var flights = await flightRepository.GetAll() ?? [];
             var customers = await customerRepository.GetAll() ?? [];
+
+            if (!User.IsInRole("Admin"))
+            {
+                var userEmail = userManager.GetUserName(User);
+                var myCustomer = customers.FirstOrDefault(c => c.Email == userEmail);
+
+                if (myCustomer != null)
+                {
+                    customers = [myCustomer];
+                }
+            }
 
             var flightItems = flights
                 .Where(f => f.DepartureTime > DateTime.Now)
@@ -40,18 +53,35 @@ namespace OrmAirways.Controllers
         public async Task<IActionResult> Index()
         {
             var bookings = await bookingRepository.GetAll() ?? [];
-            return View(bookings);
+
+            if (User.IsInRole("Admin"))
+            {
+                return View(bookings);
+            }
+
+            var userEmail = userManager.GetUserName(User);
+            var myBookings = bookings.Where(b => b.Customer?.Email == userEmail).ToList();
+            return View(myBookings);
         }
 
         public async Task<IActionResult> Details(Guid? id)
         {
-            if (!id.HasValue) 
+            if (!id.HasValue)
                 return BadRequest();
 
             var booking = await bookingRepository.GetById(id.Value);
 
-            if (booking == null) 
+            if (booking == null)
                 return NotFound();
+
+            if (!User.IsInRole("Admin"))
+            {
+                var userEmail = userManager.GetUserName(User);
+                if (booking.Customer?.Email != userEmail)
+                {
+                    return Forbid();
+                }
+            }
 
             return View(booking);
         }
@@ -67,7 +97,7 @@ namespace OrmAirways.Controllers
         {
             var flight = await flightRepository.GetById(flightId);
 
-            if (flight == null) 
+            if (flight == null)
                 return NotFound();
 
             var allSeats = await seatRepository.GetAll() ?? [];
@@ -103,6 +133,22 @@ namespace OrmAirways.Controllers
             ModelState.Remove("TicketCode");
             ModelState.Remove("Customer");
             ModelState.Remove("Flight");
+
+            if (!User.IsInRole("Admin"))
+            {
+                var customers = await customerRepository.GetAll() ?? [];
+                var userEmail = userManager.GetUserName(User);
+                var myCustomer = customers.FirstOrDefault(c => c.Email == userEmail);
+
+                if (myCustomer == null)
+                {
+                    ModelState.AddModelError("", "Seu usuário não possui cadastro de cliente vinculado.");
+                    await PopulateViewBags();
+                    return View(booking);
+                }
+
+                booking.CustomerId = myCustomer.Id;
+            }
 
             if (!ModelState.IsValid)
             {
@@ -147,6 +193,12 @@ namespace OrmAirways.Controllers
             var booking = await bookingRepository.GetById(id);
             if (booking != null)
             {
+                if (!User.IsInRole("Admin"))
+                {
+                    var userEmail = userManager.GetUserName(User);
+                    if (booking.Customer?.Email != userEmail) return Forbid();
+                }
+
                 if (booking.Flight != null && booking.Flight.DepartureTime < DateTime.Now)
                 {
                     TempData["ErrorMessage"] = "Não é possível cancelar reservas de voos passados.";

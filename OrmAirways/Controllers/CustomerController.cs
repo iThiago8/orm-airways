@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrmAirways.Interfaces;
 using OrmAirways.Models;
 
 namespace OrmAirways.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class CustomerController(ICustomerRepository customerRepository) : Controller
     {
         public async Task<IActionResult> Index()
