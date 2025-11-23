@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrmAirways.Data;
 
@@ -12,9 +13,11 @@ using OrmAirways.Data;
 namespace OrmAirways.Migrations
 {
     [DbContext(typeof(AirwaysDbContext))]
-    partial class AirwaysDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251122215911_Init")]
+    partial class Init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

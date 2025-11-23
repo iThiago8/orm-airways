@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using OrmAirways.Data;
 using OrmAirways.Interfaces;
 using OrmAirways.Repositories;
+using OrmAirways.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,14 +21,13 @@ builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IAircraftRepository, AircraftRepository>();
 builder.Services.AddScoped<ISeatRepository, SeatRepository>();
 builder.Services.AddScoped<IFlightRepository, FlightRepository>();
+builder.Services.AddScoped<IBookingService, BookingService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 

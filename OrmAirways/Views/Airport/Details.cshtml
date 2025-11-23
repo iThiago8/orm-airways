@@ -1,0 +1,46 @@
+﻿@model OrmAirways.Models.Airport
+
+@{
+    ViewData["Title"] = "Detalhes do Aeroporto";
+}
+
+<div class="container py-4">
+    <div class="card shadow border-0">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h4 class="mb-0 text-secondary">
+                <i class="fas fa-building me-2"></i>@Model.Name
+            </h4>
+            <span class="badge bg-warning text-dark fs-5">@Model.IataCode</span>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h5 class="border-bottom pb-2 text-primary">Localização</h5>
+                    <div class="mt-3">
+                        <p class="mb-1"><strong>Cidade:</strong> @Model.Location.City</p>
+                        <p class="mb-1"><strong>Estado:</strong> @Model.Location.State</p>
+                        <p class="mb-1"><strong>País:</strong> @Model.Location.Country</p>
+                        <p class="mb-1"><strong>Endereço:</strong> @Model.Location.Street</p>
+                        <p class="mb-0"><strong>CEP:</strong> @Model.Location.ZipCode</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h5 class="border-bottom pb-2 text-primary">Informações do Sistema</h5>
+                    <div class="mt-3">
+                        <p class="mb-1"><strong>ID:</strong> <span class="text-muted small">@Model.Id</span></p>
+                        <p class="mb-1"><strong>Data de Cadastro:</strong> @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</p>
+                        <div class="alert alert-light border mt-3">
+                            <i class="fas fa-info-circle me-2"></i>
+                            O Código IATA é utilizado para identificar este aeroporto em rotas e passagens.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end border-top pt-3">
+                <a asp-action="Index" class="btn btn-light border me-2">Voltar</a>
+                <a asp-action="Update" asp-route-id="@Model.Id" class="btn btn-primary px-4">Editar</a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,22 +1,26 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Net.Sockets;
 
 namespace OrmAirways.Models
 {
-    public class Flight
+    public class Flight : BaseEntity
     {
-        public int ID { get; set; }
-        public int OriginAirportID { get; set; }
+        public string FlightNumber { get; set; } = string.Empty;
 
-        [ForeignKey(nameof(OriginAirportID))]
-        public Airport OriginAirport { get; set; } = new();
-        public int DestinationAirportID { get; set; }
+        public Guid AircraftId { get; set; }
+        public Aircraft? Aircraft { get; set; }
 
-        [ForeignKey(nameof(DestinationAirportID))]
-        public Airport DestinationAirport { get; set; } = new();
-        public DateTime InitialHour { get; set; }
-        public DateTime FinalHour { get; set; }
-        public DateTime PredictedInitialHour { get; set; }
-        public DateTime PredictedFinalHour { get; set; }
+        public Guid OriginId { get; set; }
+        public Airport? Origin { get; set; }
+
+        public Guid DestinationId { get; set; }
+        public Airport? Destination { get; set; }
+
+        public DateTime DepartureTime { get; set; }
+        public DateTime ArrivalTime { get; set; }
+        public decimal BasePrice { get; set; }
+
+        public ICollection<Booking> Bookings { get; set; } = [];
     }
 }

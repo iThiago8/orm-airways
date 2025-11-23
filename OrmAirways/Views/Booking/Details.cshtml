@@ -1,0 +1,80 @@
+﻿@model OrmAirways.Models.Booking
+
+@{
+    ViewData["Title"] = "Bilhete de Embarque";
+}
+
+<div class="container py-4 d-flex justify-content-center">
+    <div class="card shadow-lg border-0" style="max-width: 700px; width: 100%;">
+        <div class="card-header bg-warning py-3 d-flex justify-content-between align-items-center text-dark">
+            <h5 class="mb-0 fw-bold text-uppercase">
+                <i class="fas fa-plane-departure me-2"></i>Cartão de Embarque
+            </h5>
+            <span class="fw-bold font-monospace">@Model.TicketCode</span>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="p-4">
+                <div class="row mb-4">
+                    <div class="col-6">
+                        <label class="text-muted small text-uppercase">Passageiro</label>
+                        <h4 class="fw-bold text-dark mb-0">@Model.Customer?.FullName</h4>
+                    </div>
+                    <div class="col-6 text-end">
+                        <label class="text-muted small text-uppercase">Voo</label>
+                        <h4 class="fw-bold text-dark mb-0">@Model.Flight?.FlightNumber</h4>
+                    </div>
+                </div>
+
+                <div class="row mb-4 align-items-center">
+                    <div class="col-4 text-center">
+                        <h2 class="display-5 fw-bold text-primary">@Model.Flight?.Origin?.IataCode</h2>
+                        <p class="mb-0">@Model.Flight?.Origin?.Location?.City</p>
+                        <small class="fw-bold text-dark">@Model.Flight?.DepartureTime.ToString("HH:mm")</small>
+                    </div>
+                    <div class="col-4 text-center">
+                        <i class="fas fa-plane fa-2x text-warning plane-icon"></i>
+                        <div class="border-top border-2 mt-2 w-100 position-relative" style="top:-15px; z-index:-1;"></div>
+                        <small class="text-muted d-block mt-2">@Model.Flight?.DepartureTime.ToString("dd/MM/yyyy")</small>
+                    </div>
+                    <div class="col-4 text-center">
+                        <h2 class="display-5 fw-bold text-primary">@Model.Flight?.Destination?.IataCode</h2>
+                        <p class="mb-0">@Model.Flight?.Destination?.Location?.City</p>
+                        <small class="fw-bold text-dark">@Model.Flight?.ArrivalTime.ToString("HH:mm")</small>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-4">
+                        <div class="p-3 bg-light rounded text-center h-100">
+                            <label class="text-muted small text-uppercase d-block">Portão</label>
+                            <strong class="fs-4">--</strong>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-3 bg-dark text-white rounded text-center h-100">
+                            <label class="text-white-50 small text-uppercase d-block">Assento</label>
+                            <strong class="fs-2">@Model.Seat?.Code</strong>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-3 bg-light rounded text-center h-100">
+                            <label class="text-muted small text-uppercase d-block">Classe</label>
+                            <strong class="fs-6">@Model.Seat?.ClassType</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-light border-top p-3 text-center" style="border-top: 2px dashed #ccc !important;">
+                <i class="fas fa-barcode fa-3x text-dark"></i>
+                <p class="mb-0 mt-2 small text-muted">Este documento deve ser apresentado no portão de embarque.</p>
+            </div>
+        </div>
+
+        <div class="card-footer bg-white border-0 text-end pb-3 pe-4">
+            <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+            <button onclick="window.print()" class="btn btn-primary ms-2"><i class="fas fa-print me-2"></i>Imprimir</button>
+        </div>
+    </div>
+</div>

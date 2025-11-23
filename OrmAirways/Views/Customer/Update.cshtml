@@ -1,52 +1,64 @@
 ﻿@model OrmAirways.Models.Customer
-<h1>Create</h1>
 
-<h4>Cliente</h4>
+@{
+    ViewData["Title"] = "Editar Cliente";
+}
 
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Update">
-            <div asp-validation-summary="ModelOnly"
-                 class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="CPF"
-                       class="control-label"></label>
-                <input asp-for="CPF"
-                       class="form-control" />
-                <span asp-validation-for="CPF"
-                      class="text-danger"></span>
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow border-0">
+            <div class="card-header bg-secondary text-white py-3">
+                <h5 class="mb-0"><i class="fas fa-user-edit me-2"></i>Editar Cliente</h5>
             </div>
+            <div class="card-body p-4">
+                <form asp-action="Update">
+                    <input type="hidden" asp-for="Id" />
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-            <div class="form-group">
-                <label asp-for="Name"
-                       class="control-label"></label>
-                <input asp-for="Name"
-                       class="form-control" />
-                <span asp-validation-for="Name"
-                      class="text-danger"></span>
-            </div>
+                    <div class="mb-3">
+                        <label asp-for="FullName" class="form-label fw-bold">Nome Completo</label>
+                        <input asp-for="FullName" class="form-control" />
+                        <span asp-validation-for="FullName" class="text-danger small"></span>
+                    </div>
 
-            <div class="form-group">
-                <label asp-for="PhoneNumber"
-                       class="control-label"></label>
-                <input asp-for="PhoneNumber"
-                       class="form-control" />
-                <span asp-validation-for="PhoneNumber"
-                      class="text-danger"></span>
-            </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="DocumentNumber" class="form-label fw-bold">CPF</label>
+                            <input asp-for="DocumentNumber" class="form-control" readonly />
+                            <div class="form-text text-muted">O documento não pode ser alterado.</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Phone" class="form-label fw-bold">Telefone</label>
+                            <input asp-for="Phone" class="form-control" />
+                            <span asp-validation-for="Phone" class="text-danger small"></span>
+                        </div>
+                    </div>
 
-            <div class="form-group">
-                <label asp-for="IsVIP"></label>
-                <input class="checkbox form-check-input" type="checkbox"
-                       asp-for="IsVIP" />
-                <span asp-validation-for="IsVIP"
-                      class="text-danger"></span>
-            </div>
+                    <div class="mb-4">
+                        <label asp-for="Email" class="form-label fw-bold">E-mail</label>
+                        <input asp-for="Email" class="form-control" type="email" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
 
-            <div>
-                <input type="submit" value="Salvar"
-                       class="btn btn-primary" />
+                    <div class="form-check form-switch mb-4">
+                        <input class="form-check-input" type="checkbox" role="switch" asp-for="IsPriority" id="vipSwitch">
+                        <label class="form-check-label fw-bold" for="vipSwitch">Cliente VIP</label>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary fw-bold">
+                            <i class="fas fa-check me-2"></i>Salvar Alterações
+                        </button>
+                        <a asp-action="Index" class="btn btn-light text-secondary border">Cancelar</a>
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
     </div>
 </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

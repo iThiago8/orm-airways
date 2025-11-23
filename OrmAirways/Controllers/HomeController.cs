@@ -1,19 +1,43 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using OrmAirways.Interfaces;
 using OrmAirways.Models;
+using OrmAirways.Models.ViewModels;
+using System.Diagnostics;
 
 namespace OrmAirways.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController(
+        IAircraftRepository aircraftRepository,
+        IAirportRepository airportRepository,
+        ICustomerRepository customerRepository,
+        IBookingRepository bookingRepository,
+        IFlightRepository flightRepository) : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        public async Task<IActionResult> Index()
         {
-            _logger = logger;
+            var aircrafts = await aircraftRepository.GetAll();
+            var airports = await airportRepository.GetAll();
+            var customers = await customerRepository.GetAll();
+            var bookings = await bookingRepository.GetAll();
+            var flights = await flightRepository.GetAll();
+
+            var viewModel = new DashboardViewModel
+            {
+                TotalAircrafts = aircrafts?.Count ?? 0,
+                TotalAirports = airports?.Count ?? 0,
+                TotalCustomers = customers?.Count ?? 0,
+                TotalBookings = bookings?.Count ?? 0,
+                UpcomingFlights = flights?
+                    .Where(f => f.DepartureTime >= DateTime.Now)
+                    .OrderBy(f => f.DepartureTime)
+                    .Take(5)
+                    .ToList() ??[]
+            };
+
+            return View(viewModel);
         }
 
-        public IActionResult Index()
+        public IActionResult Privacy()
         {
             return View();
         }

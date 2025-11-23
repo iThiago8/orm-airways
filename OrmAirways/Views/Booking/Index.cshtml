@@ -1,56 +1,80 @@
-﻿@model ICollection<OrmAirways.Models.Booking>
+﻿@model IEnumerable<OrmAirways.Models.Booking>
 
 @{
-	ViewData["Title"] = "Reservas";
+    ViewData["Title"] = "Reservas";
 }
 
-<div class="text-center">
-    <h1 class="display-4">
-        Total de clientes: @Model.Count
-    </h1>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-secondary">
+        <i class="fas fa-ticket-alt me-2"></i>Gestão de Reservas
+    </h2>
+    <a asp-action="Create" class="btn btn-dark">
+        <i class="fas fa-plus me-1"></i> Nova Venda
+    </a>
+</div>
 
-    <a asp-controller="Booking" asp-action="Create">Novo</a>
-    <table class="table table-responsive table-hover table-striped">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Cliente</th>
-                <th>Assento escolhido</th>
-                <th>Origem</th>
-                <th>Destino</th>
-                <th></th>
-                <th></th>
-            </tr>
-        </thead>
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 
-        <tbody>
-            @foreach (var b in Model)
-            {
-                <tr>
-                    <td>@b.ID</td>
-                    <td>@b.Customer.Name</td>
-                    <td>@b.Seat.Name</td>
-                    <td>@b.Flight.OriginAirport.Name</td>
-                    <td>@b.Flight.DestinationAirport.Name</td>
-                    <td>
-                        <a asp-controller="Booking" asp-action="Update"
-                           asp-route-id="@b.ID"
-                           class="btn btn-primary btn-sm">
-                            ✏️
-                        </a>
-                    </td>
-                    <td>
-                        <form asp-controller="Booking" asp-action="Delete"
-                              method="post">
-                            <input type="hidden" name="id" value="@b.ID" />
-                            <button type="submit"
-                                    class="btn btn-danger btn-sm">
-                                🗑️
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Ticket</th>
+                        <th>Passageiro</th>
+                        <th>Voo / Rota</th>
+                        <th>Assento</th>
+                        <th>Status</th>
+                        <th class="text-end pe-4">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="ps-4 fw-bold font-monospace text-primary">@item.TicketCode</td>
+                            <td>
+                                <div class="fw-bold">@item.Customer?.FullName</div>
+                                <small class="text-muted">@item.Customer?.DocumentNumber</small>
+                            </td>
+                            <td>
+                                <div>@item.Flight?.FlightNumber</div>
+                                <small class="text-muted">@item.Flight?.Origin?.IataCode > @item.Flight?.Destination?.IataCode</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border px-3">@item.Seat?.Code</span>
+                            </td>
+                            <td>
+                                @if (item.IsConfirmed)
+                                {
+                                    <span class="badge bg-success bg-opacity-75">Confirmado</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">Pendente</span>
+                                }
+                            </td>
+                            <td class="text-end pe-4">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info me-1">
+                                    <i class="fas fa-print"></i>
+                                </a>
+                                <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline;" onsubmit="return confirm('Cancelar esta reserva?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>

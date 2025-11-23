@@ -1,51 +1,102 @@
-﻿@model ICollection<OrmAirways.Models.Aircraft>
+﻿@model IEnumerable<OrmAirways.Models.Aircraft>
 
-    @{
-        ViewData["Title"] = "New Aircraft";
-    }
+@{
+    ViewData["Title"] = "Frota";
+}
 
-
-<div class="text-center">
-    <h1 class="display-4">
-        Total de Aeronaves: @Model.Count
-    </h1>
-
-    <a asp-controller="Aircraft" asp-action="Create">Novo</a>
-    <table class="table table-responsive table-hover table-striped">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Model</th>
-                <th>NumberSeats</th>
-                <th></th>
-            </tr>
-        </thead>
-
-        <tbody>
-            @foreach (var a in Model)
-            {
-                <tr>
-                    <td>@a.ID</td>
-                    <td>@a.Model</td>
-                    <td>@a.SeatNumber</td>
-                    <td>
-                            <a asp-controller="Aircraft" asp-action="Update"
-                               asp-route-id="@a.ID">
-                                ✏️
-                            </a>
-                        </td>
-                        <td>
-                            <form asp-controller="Aircraft" asp-action="Delete"
-                                  method="post">
-                                <input type="hidden" name="id" value="@a.ID" />
-                                <button type="submit"
-                                        class="btn btn-danger btn-sm">
-                                    🗑️
-                                </button>
-                            </form>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-secondary">
+        <i class="fas fa-plane me-2"></i>Frota
+    </h2>
+    <a asp-action="Create" class="btn btn-dark">
+        <i class="fas fa-plus me-1"></i> Nova Aeronave
+    </a>
 </div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Matrícula</th>
+                        <th>Modelo</th>
+                        <th class="text-center">Capacidade</th>
+                        <th class="text-end pe-4">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="ps-4 fw-bold text-primary">@item.RegistrationNumber</td>
+                            <td class="text-dark">@item.Model</td>
+                            <td class="text-center">
+                                <span class="badge bg-secondary rounded-pill">@item.Capacity Assentos</span>
+                            </td>
+                            <td class="text-end pe-4">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info me-1" title="Detalhes">
+                                    <i class="fas fa-info-circle"></i>
+                                </a>
+                                <a asp-action="Update" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary me-1" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="@item.Id" data-reg="@item.RegistrationNumber">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Exclusão -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="fas fa-exclamation-triangle me-2"></i>Confirmar Exclusão</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja remover a aeronave <strong id="aircraftReg"></strong>?</p>
+                <p class="text-muted small mb-0">Esta ação não pode ser desfeita e removerá todos os assentos associados.</p>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                <form id="deleteForm" method="post" asp-action="Delete">
+                    <input type="hidden" name="id" id="deleteId" />
+                    <button type="submit" class="btn btn-danger">Excluir</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var deleteModal = document.getElementById('deleteModal');
+        deleteModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var id = button.getAttribute('data-id');
+            var reg = button.getAttribute('data-reg');
+
+            var modalIdInput = deleteModal.querySelector('#deleteId');
+            var modalRegText = deleteModal.querySelector('#aircraftReg');
+
+            modalIdInput.value = id;
+            modalRegText.textContent = reg;
+        });
+    </script>
+}

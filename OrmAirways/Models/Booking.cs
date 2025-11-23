@@ -1,24 +1,19 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace OrmAirways.Models
+﻿namespace OrmAirways.Models
 {
-    public class Booking
+    public class Booking : BaseEntity
     {
-        [Key]
-        public int ID { get; set; }
-        public int CustomerID { get; set; }
+        public string TicketCode { get; set; } = Guid.NewGuid().ToString()[..8].ToUpper();
 
-        [ForeignKey(nameof(CustomerID))]
-        public Customer Customer { get; set; } = new();
+        public Guid CustomerId { get; set; }
+        public Customer? Customer { get; set; }
 
-        public int SeatID { get; set; }
+        public Guid FlightId { get; set; }
+        public Flight? Flight { get; set; }
 
-        [ForeignKey(nameof(SeatID))]
-        public Seat Seat { get; set; } = new();
-        public int FlightID { get; set; }
+        public Guid? SeatId { get; set; }
+        public Seat? Seat { get; set; }
 
-        [ForeignKey(nameof(FlightID))]
-        public Flight Flight { get; set; } = new();
+        public DateTime BookingDate { get; set; } = DateTime.UtcNow;
+        public bool IsConfirmed { get; set; } = true;
     }
 }
