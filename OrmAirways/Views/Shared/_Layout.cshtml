@@ -35,7 +35,7 @@
                 <li class="px-4 py-2 text-uppercase smaller fw-bold" style="font-size: 0.75rem; color: #b2bec3; opacity: 0.8;">Comercial</li>
 
                 <li>
-                    <a asp-controller="Flights" asp-action="Index" class="sidebar-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Flights" ? "active" : "")">
+                    <a asp-controller="Flight" asp-action="Index" class="sidebar-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Flight" ? "active" : "")">
                         <i class="fas fa-calendar-check"></i> Gerenciar Voos
                     </a>
                 </li>
@@ -45,7 +45,7 @@
                     </a>
                 </li>
                 <li>
-                    <a asp-controller="Customers" asp-action="Index" class="sidebar-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Customers" ? "active" : "")">
+                    <a asp-controller="Customer" asp-action="Index" class="sidebar-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Customer" ? "active" : "")">
                         <i class="fas fa-user-tie"></i> Clientes
                     </a>
                 </li>
@@ -59,12 +59,12 @@
                     </a>
                 </li>
                 <li>
-                    <a asp-controller="Airports" asp-action="Index" class="sidebar-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Airports" ? "active" : "")">
+                    <a asp-controller="Airport" asp-action="Index" class="sidebar-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Airport" ? "active" : "")">
                         <i class="fas fa-building"></i> Aeroportos
                     </a>
                 </li>
                 <li>
-                    <a asp-controller="Seats" asp-action="Index" class="sidebar-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Seats" ? "active" : "")">
+                    <a asp-controller="Seat" asp-action="Index" class="sidebar-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Seat" ? "active" : "")">
                         <i class="fas fa-chair"></i> Mapa de Assentos
                     </a>
                 </li>
